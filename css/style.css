@@ -1,3 +1,7 @@
+#chart_parent_div {
+  margin-top: 10px;
+}
+
 .btn {
   width: 20em;
   position: relative;
