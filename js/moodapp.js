@@ -41,8 +41,7 @@ function drawChart(dataset){
 	data.addColumn('datetime','Timestamp');
 	data.addColumn('number','Mood');
         var options = {
-        title: 'Graph',
-	chartArea:{width:'100%',height:'75%'}
+		thickness:3	
         };
 
 
