@@ -11,7 +11,7 @@ document.onkeydown = function(e){
 	}
 };
 
-google.load("visualization", "1", {packages:["corechart"]});
+google.load("visualization", "1", {packages:["annotationchart"]});
 google.setOnLoadCallback(drawChart);
 
 var votes = [];
@@ -23,7 +23,7 @@ function vote(direction){
 			last = votes[votes.length -1][1];
 		};
 //		if (localStorage.getitem("moodapp") === null){
-			console.log(JSON.parse(localStorage["moodapp"]));
+//			console.log(JSON.parse(localStorage["moodapp"]));
 //		};
 console.log(d);
 		var score = last + direction; 
@@ -48,7 +48,7 @@ function drawChart(dataset){
 
 	data.addRows(dataset);
 
-        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+        var chart = new google.visualization.AnnotationChart(document.getElementById('chart_div'));
 
         chart.draw(data, options);
 };
