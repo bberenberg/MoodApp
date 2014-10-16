@@ -1,6 +1,7 @@
 .btn {
+  width: 20em;
   position: relative;
-  display: block;
+  display: inline-block;
   margin: 0 auto;
   padding: 1.6em 1em;
   max-width: 20em;
