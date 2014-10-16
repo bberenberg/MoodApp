@@ -1,0 +1,58 @@
+
+
+document.onkeydown = function(e){
+	switch (e.keyCode){
+		case 38:
+			vote(1);
+			break;
+		case 40:
+			vote(-1);
+			break;
+	}
+};
+
+google.load("visualization", "1", {packages:["corechart"]});
+google.setOnLoadCallback(drawChart);
+
+var votes = [];
+function vote(direction){
+	if(typeof(Storage)!=="undefined") {
+		var d = new Date();
+		var last = 0;
+		if (votes.length != 0){
+			last = votes[votes.length -1][1];
+		};
+//		if (localStorage.getitem("moodapp") === null){
+			console.log(JSON.parse(localStorage["moodapp"]));
+//		};
+console.log(d);
+		var score = last + direction; 
+		votes.push([d,score]);
+		localStorage["moodapp"] = JSON.stringify(votes);
+		drawChart(votes);
+	}
+	else{
+		console.log('No support for LocalStorage');
+	}	
+};
+
+function drawChart(dataset){
+  var data = new google.visualization.DataTable();
+	data.addColumn('datetime','Timestamp');
+	data.addColumn('number','Mood');
+        var options = {
+        title: 'Graph',
+	chartArea:{width:'100%',height:'75%'}
+        };
+
+
+	data.addRows(dataset);
+
+        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+
+        chart.draw(data, options);
+};
+
+window.onresize = function() {
+	drawChart(votes);
+};
