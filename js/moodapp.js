@@ -48,9 +48,14 @@ function drawChart(dataset){
 
 	data.addRows(dataset);
 
+<<<<<<< HEAD
         chart = new google.visualization.AnnotationChart(document.getElementById('chart_parent_div'));
 	
 	document.getElementById('chart_parent_div').innerHTML = "";	
+=======
+        var chart = new google.visualization.AnnotationChart(document.getElementById('chart_div'));
+
+>>>>>>> dbb0c81ff31d38023bca2d39c0c13a092d411ce8
         chart.draw(data, options);
 };
 
