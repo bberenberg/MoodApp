@@ -1,5 +1,11 @@
 var chart;
 
+window.onload = function(e){
+	var votes;
+	votes = readLocalStorage();
+	drawChart(votes);
+}
+
 document.onkeydown = function(e){
 	switch (e.keyCode){
 		case 38:
@@ -22,10 +28,7 @@ function vote(direction){
 		if (votes.length != 0){
 			last = votes[votes.length -1][1];
 		};
-//		if (localStorage.getitem("moodapp") === null){
-//			console.log(JSON.parse(localStorage["moodapp"]));
-//		};
-console.log(d);
+
 		var score = last + direction; 
 		votes.push([d,score]);
 		localStorage["moodapp"] = JSON.stringify(votes);
@@ -35,6 +38,22 @@ console.log(d);
 		console.log('No support for LocalStorage');
 	}	
 };
+
+function readLocalStorage(){
+	if(typeof(Storage)!=="undefined") {
+		var localStorageRaw = JSON.parse(localStorage["moodapp"]);
+		var localStorageClean = localStorageRaw;
+		for (i=0; i <localStorageRaw.length; i++){
+			var oldDate = localStorageRaw[i][0];
+			var objectDate = new Date(oldDate);
+			localStorageClean[i][0] = objectDate;
+		};
+		return localStorageClean;
+	}
+	else{   
+                console.log('No support for LocalStorage');
+        }
+}
 
 function drawChart(dataset){
   var data = new google.visualization.DataTable();
@@ -55,7 +74,9 @@ function drawChart(dataset){
 
 function clearChart(){
 	document.getElementById('chart_parent_div').innerHTML = "";
-	chart.clearChart();
+	votes = [];
+	localStorage["moodapp"] = "";
+//	chart.clearChart();
 }
 
 window.onresize = function() {
