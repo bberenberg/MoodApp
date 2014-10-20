@@ -54,6 +54,7 @@ function drawChart(dataset){
 };
 
 function clearChart(){
+	document.getElementById('chart_parent_div').innerHTML = "";
 	chart.clearChart();
 }
 
