@@ -21,6 +21,8 @@ google.load("visualization", "1", {packages:["annotationchart"]});
 google.setOnLoadCallback(drawChart);
 
 var votes = [];
+votes = readLocalStorage();
+
 function vote(direction){
 	if(typeof(Storage)!=="undefined") {
 		var d = new Date();
