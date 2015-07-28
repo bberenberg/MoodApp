@@ -28,6 +28,17 @@ main.on('click', 'up', function(e) {
 main.on('click', 'down', function(e) {
   vote(-1);
 });
+/*
+Future planned use for affirmations.
+
+main.on('longClick', 'down', function(e) {
+  var affirmation = new UI.Card({});
+  affirmation = buildAffirmation(affirmation);
+  affirmation.on('back', function(e) {
+    main.body(mainContent());
+  });
+  affirmation.show();
+});*/
 
 main.on('click', 'select', function(e) {
   var menu = new UI.Menu();
@@ -79,7 +90,6 @@ function readLocalStorage(){
 function avgScore(date){
   var score = 0;
   var sum = sumScore(date);
-  console.log(sum[0]+' '+sum[1]);
   if (sum[1]){
     score = Math.round(((sum[0] / sum[1] * 100) + 100) / 2);
   } else {
@@ -131,3 +141,11 @@ function buildMenu(menu){
   menu.item(0, 3, { title: 'Delete History' });
   return menu;
 }
+
+/*
+This will be used to build the affirmation card in the future.
+
+function buildAffirmation(affirmation){
+  affirmation.body('test');
+  return affirmation;
+} */
