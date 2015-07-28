@@ -4,6 +4,13 @@
  * Written by Boris Berenberg / http://tin.cr
  */
 
+//Static stuff
+var yesterday = new Date(new Date().getTime() - (24 * 60 * 60 * 1000));
+var week = new Date(new Date().getTime() - (7 * 24 * 60 * 60 * 1000));
+var month = new Date(new Date().getTime() - (30 * 24 * 60 * 60 * 1000));
+var defaultBody = 'Press up and down to indicate mood, and select to see the menu';
+
+
 var UI = require('ui');
 
 var votes = readLocalStorage();
@@ -23,22 +30,16 @@ main.show();
 
 main.on('click', 'up', function(e) {
   vote(1);
-  mainContent();
   main.show();
 });
 
 main.on('click', 'down', function(e) {
   vote(-1);
-  mainContent();
   main.show();
 });
 
 main.on('click', 'select', function(e) {
   votes = readLocalStorage();
-  var yesterday = new Date(new Date().getTime() - (24 * 60 * 60 * 1000));
-  var week = new Date(new Date().getTime() - (7 * 24 * 60 * 60 * 1000));
-  var month = new Date(new Date().getTime() - (30 * 24 * 60 * 60 * 1000));
-  
   var menu = new UI.Menu({
     sections: [{
       items: [{
@@ -53,12 +54,19 @@ main.on('click', 'select', function(e) {
     }]
   });
   menu.on('select', function(e) {
-  console.log('Selected item #' + e.itemIndex + ' of section #' + e.sectionIndex);
-  console.log('The item is titled "' + e.item.title + '"');
+    if (e.itemIndex == 3){
+      votes. length = 0;
+    }
+  });
+  menu.on('back', function(e) {
+    main.show();
   });
   menu.show();
 });
 
+main.on('show', function() {
+  mainContent();
+});
 
 
 function vote(direction){
@@ -88,7 +96,7 @@ function readLocalStorage(){
 function avgScore(date){
   var score = 0;
   var sum = sumScore(date);
-  score = sum[0] / sum[1];
+  score = Math.round(sum[0] / sum[1] * 10) / 10;
   return score;
 }
 
@@ -98,7 +106,6 @@ function sumScore(date){
   if (votes && votes.length){
     for (i=0; i <votes.length; i++){
       if (votes[i][0].getTime() > date.getTime()){
-        console.log(votes[i][1]);
         sum = sum + votes[i][1];
         counter++;
       }
@@ -108,12 +115,17 @@ function sumScore(date){
 }
 
 function mainContent(){
-  var defaultBody = 'Press up and down to indicate mood, and select to see the menu';
   bodyContent = '';
-  if (votes == []){
+  if (votes[0] == null){
     bodyContent = defaultBody;
   } else {
-    bodyContent = 'Sum score from the start of the day is: ' + sumScore(moment().startOf('day'))[1];                     
+    bodyContent = 'Your daily mood sum is: ' + sumScore(startOfDay())[1];                     
   }
   return bodyContent;
+}
+
+function startOfDay(){
+  var start = new Date();
+  start.setHours(0,0,0,0);
+  return start;
 }
