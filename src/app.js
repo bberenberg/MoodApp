@@ -185,14 +185,12 @@ function drawGraph(days,segments){
       var scoreDate = segmentScores[i][0];
       if (scoreDate > timeHop(days) && scoreDate < timeHop(days / segments * s).addHours(1)){
         graphScores[s] = graphScores[s-1] + segmentScores[i][1]; 
-        console.log(segmentScores[i][1]);
-        console.log(graphScores[s]);
       }
     }
   }
   var columns = new Array();
   for (i = 0; i < segments; i++){
-    columns[i] = new UI.Rect({ position: new Vector2(0 + barWidth * i, 144), size: new Vector2(0 + barWidth * (i+1), 144 - (12 * graphScores[i])) });
+    columns[i] = new UI.Rect({ position: new Vector2(barWidth * i, 72), size: new Vector2(barWidth * (i+1), 72 + (12 * graphScores[i])) });
     columns[i].backgroundColor("black");
     graph.add(columns[i]);
   }
