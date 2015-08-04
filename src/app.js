@@ -2,6 +2,7 @@
  * Mood App
  *
  * Written by Boris Berenberg / http://tin.cr
+ * 
  */
 
 //Static stuff
@@ -38,17 +39,6 @@ main.on('click', 'up', function(e) {
 main.on('click', 'down', function(e) {
   vote(-1);
 });
-/*
-Future planned use for affirmations.
-
-main.on('longClick', 'down', function(e) {
-  var affirmation = new UI.Card({});
-  affirmation = buildAffirmation(affirmation);
-  affirmation.on('back', function(e) {
-    main.body(mainContent());
-  });
-  affirmation.show();
-});*/
 
 //Menu handler
 main.on('click', 'select', function(e) {
@@ -81,7 +71,7 @@ function readLocalStorage(){
 	var localStorageRaw = JSON.parse(localStorage.getItem("moodapp"));
 	var localStorageClean = localStorageRaw;
 	if (localStorageRaw && localStorageRaw.length) {
-    for (i=0; i <localStorageRaw.length; i++){
+    for (var i=0; i <localStorageRaw.length; i++){
       var oldDate = localStorageRaw[i][0];
       var objectDate = new Date(oldDate);
       localStorageClean[i][0] = objectDate;
@@ -109,12 +99,12 @@ function avgScore(date){
 }
 
 //finds the sum score
-function sumScore(date){
+function sumScore(pastDate){
   var sum = 0;
   var counter = 0;
   if (votes && votes.length){
-    for (i=0; i <votes.length; i++){
-      if (votes[i][0].getTime() > date.getTime()){
+    for (var i=0; i <votes.length; i++){
+      if (votes[i][0].getTime() > pastDate.getTime()){
         sum = sum + votes[i][1];
         counter = counter + 1;
       }
@@ -143,7 +133,7 @@ function startOfDay(){
 
 //gives us a date object N number of days in the past
 function timeHop(days){
-  var hop = new Date(new Date().getTime() - (days * 24 * 60 * 60 * 1000));
+  var hop = new Date(startOfDay() - (days * 24 * 60 * 60 * 1000));
   return hop;
 }
 
@@ -153,6 +143,7 @@ function buildMenu(menu){
   menu.item(0, 1, { title: '7 day avg (' + avgScore(timeHop(7)) + '%)' });
   menu.item(0, 2, { title: '30 day avg (' + avgScore(timeHop(30)) + '%)' });
   menu.item(0, 3, { title: 'Delete History' });
+  menu.item(0, 4, { title: 'Data Generator' });
   return menu;
 }
 
@@ -160,6 +151,8 @@ function buildMenu(menu){
 function handleMenu(menu, e){
   if (e.itemIndex === 0) {
     drawGraph(1,24);
+  } else if (e.itemIndex == 4) {
+    dataGenerator(menu);
   } else if (e.itemIndex == 3) {
     votes.length = 0;
     localStorage.setItem("moodapp", JSON.stringify(votes));
@@ -168,44 +161,77 @@ function handleMenu(menu, e){
   }
 }
 
+//bin the numbers into a histogram, and draw the graph
 function drawGraph(days,segments){
   var graph = new UI.Window();
   var background = new UI.Rect({ size: new Vector2(144, 168) });
   var barWidth = 144 / segments;
   graph.add(background);
+  
+  //get just the scores for the time period we are looking at
   var segmentScores = [];
-  for (i=votes.length - 1; i >= 0; i--){
+  for (var i=votes.length - 1; i >= 0; i--){
     if (votes[i][0] > timeHop(days)){
-      segmentScores[i] = votes[i];
+      segmentScores.push(votes[i]);
     }
   }
-  var graphScores = [0];
-  for (s = 1; s <= segments; s++){
-    for (i = 0; i < segmentScores.length; i++){
+  printVotes(segmentScores);
+  //bin the scores
+/*  var binnedScores = {};
+  binnedScores[0] = 0;
+  for (var s = 1; s <= segments; s++){
+    console.log('s-1 log ' + (s-1));
+    for (var i = 0; i < segmentScores.length; i++){
       var scoreDate = segmentScores[i][0];
-      if (scoreDate > timeHop(days) && scoreDate < timeHop(days / segments * s).addHours(1)){
-        graphScores[s] = graphScores[s-1] + segmentScores[i][1]; 
+      if (scoreDate >= timeHop(days).addHours((24/segments)*(s-1)) && scoreDate < timeHop(days).addHours((24/segments)*(s-1)+1)){
+        console.log('before ' + (s-1) + ' sum: ' + binnedScores[s] + ' plus ' + segmentScores[i][1]);
+        //binnedScores is being lame for some reason and being a NaN
+        binnedScores[(s-1)] = binnedScores[(s-1)] + segmentScores[i][1];
+        console.log('after ' + (s-1) + ' ' + binnedScores[(s-1)]);
       }
     }
   }
-  var columns = new Array();
-  for (i = 0; i < segments; i++){
-    columns[i] = new UI.Rect({ position: new Vector2(barWidth * i, 72), size: new Vector2(barWidth * (i+1), 72 + (12 * graphScores[i])) });
-    columns[i].backgroundColor("black");
-    graph.add(columns[i]);
+  for (var i = 0; i < binnedScores.length; i++){
+    console.log(i + ' ' + binnedScores[i]);
+  } */
+  
+  var hourlyScores = {};
+  segmentScores.forEach(function(score) {
+    var hour = score[0].getHours();
+    hourlyScores[hour] = (hourlyScores[hour] || 0) + score[1];
+  });
+  
+  //draw the scores
+  var columns = {};
+  for (var i = 0; i < segments; i++){
+    if (hourlyScores[i]){
+      columns[i] = new UI.Rect({ position: new Vector2(barWidth * i, 72), size: new Vector2(barWidth, (12 * hourlyScores[i])), borderColor: 'black', backgroundColor: 'white' });
+      graph.add(columns[i]);
+      console.log('upper left x ' + (barWidth * i) + ' upper left y 72 bottom right x ' + (barWidth * (i+1)) + ' bottom right y ' + (72 + (12 * hourlyScores[i])));
+    }
   }
   graph.show();
 }
 
-/*
-This will be used to build the affirmation card in the future.
+function dataGenerator(menu){
+  votes.length = 0;
+  for (var i = 0; i < 20; i++){
+      var d = timeHop(1/(Math.floor(Math.random() * 24) + 1 ));
+      var direction = Math.random() < 0.5 ? 1 : -1;
+      votes.push([d,direction]);
+  }
+  localStorage.setItem("moodapp", JSON.stringify(votes));
+  main.body(mainContent());
+  buildMenu(menu);
+}
 
-function buildAffirmation(affirmation){
-  affirmation.body('test');
-  return affirmation;
-} */
+function printVotes(array){
+  for (var i = 0; i < array.length; i++){
+    console.log(array[i][0] + '  ' + array[i][1]);
+  }
+}
 
 Date.prototype.addHours= function(h){
     this.setHours(this.getHours()+h);
     return this;
-}
+};
