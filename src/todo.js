@@ -8,9 +8,8 @@ main.on('longClick', 'down', function(e) {
     main.body(mainContent());
   });
   affirmation.show();
-});*/
+});
 
-/*
 This will be used to build the affirmation card in the future.
 
 function buildAffirmation(affirmation){
@@ -19,3 +18,7 @@ function buildAffirmation(affirmation){
 } */
 
 // use this to add action icons: http://developer.getpebble.com/docs/pebblejs/#window-action-actiondef
+
+// Do I need to be cleaning up my windows? http://developer.getpebble.com/docs/pebblejs/#window-hide
+
+// Config page: https://github.com/pebble/slate

@@ -151,13 +151,17 @@ function buildMenu(menu){
 function handleMenu(menu, e){
   if (e.itemIndex === 0) {
     drawGraph(1,24);
-  } else if (e.itemIndex == 4) {
-    dataGenerator(menu);
+  } else if (e.itemIndex == 1) {
+     drawGraph(7,7);
+  } else if (e.itemIndex == 2) {
+     drawGraph(30,30);
   } else if (e.itemIndex == 3) {
     votes.length = 0;
     localStorage.setItem("moodapp", JSON.stringify(votes));
     main.body(mainContent());
     buildMenu(menu);
+  } else if (e.itemIndex == 4) {
+    dataGenerator(menu);
   }
 }
 
@@ -165,8 +169,10 @@ function handleMenu(menu, e){
 function drawGraph(days,segments){
   var graph = new UI.Window();
   var background = new UI.Rect({ size: new Vector2(144, 168) });
+  var xAxis = new UI.Rect({ position: new Vector2(0,72), size: new Vector2(144, 1), backgroundColor: 'black'});
   var barWidth = 144 / segments;
   graph.add(background);
+    
   
   //get just the scores for the time period we are looking at
   var segmentScores = [];
@@ -175,48 +181,38 @@ function drawGraph(days,segments){
       segmentScores.push(votes[i]);
     }
   }
-  printVotes(segmentScores);
-  //bin the scores
-/*  var binnedScores = {};
-  binnedScores[0] = 0;
-  for (var s = 1; s <= segments; s++){
-    console.log('s-1 log ' + (s-1));
-    for (var i = 0; i < segmentScores.length; i++){
-      var scoreDate = segmentScores[i][0];
-      if (scoreDate >= timeHop(days).addHours((24/segments)*(s-1)) && scoreDate < timeHop(days).addHours((24/segments)*(s-1)+1)){
-        console.log('before ' + (s-1) + ' sum: ' + binnedScores[s] + ' plus ' + segmentScores[i][1]);
-        //binnedScores is being lame for some reason and being a NaN
-        binnedScores[(s-1)] = binnedScores[(s-1)] + segmentScores[i][1];
-        console.log('after ' + (s-1) + ' ' + binnedScores[(s-1)]);
-      }
-    }
+
+  //bin the scores  
+  var results = {};
+  if (days == 1){
+    segmentScores.forEach(function(score) {
+      var hour = score[0].getHours();
+      results[hour] = (results[hour] || 0) + score[1];
+    });
+  } else {
+    segmentScores.forEach(function(score) {
+      var day = score[0].getDate();
+      results[day] = (results[day] || 0) + score[1];
+    });
   }
-  for (var i = 0; i < binnedScores.length; i++){
-    console.log(i + ' ' + binnedScores[i]);
-  } */
   
-  var hourlyScores = {};
-  segmentScores.forEach(function(score) {
-    var hour = score[0].getHours();
-    hourlyScores[hour] = (hourlyScores[hour] || 0) + score[1];
-  });
   
   //draw the scores
   var columns = {};
   for (var i = 0; i < segments; i++){
-    if (hourlyScores[i]){
-      columns[i] = new UI.Rect({ position: new Vector2(barWidth * i, 72), size: new Vector2(barWidth, (12 * hourlyScores[i])), borderColor: 'black', backgroundColor: 'white' });
+    if (results[i]){
+      columns[i] = new UI.Rect({ position: new Vector2(barWidth * i, 72), size: new Vector2(barWidth, (12 * results[i])), borderColor: 'black', backgroundColor: 'white' });
       graph.add(columns[i]);
-      console.log('upper left x ' + (barWidth * i) + ' upper left y 72 bottom right x ' + (barWidth * (i+1)) + ' bottom right y ' + (72 + (12 * hourlyScores[i])));
     }
   }
+  graph.add(xAxis);
   graph.show();
 }
 
 function dataGenerator(menu){
   votes.length = 0;
-  for (var i = 0; i < 20; i++){
-      var d = timeHop(1/(Math.floor(Math.random() * 24) + 1 ));
+  for (var i = 0; i < 100; i++){
+      var d = timeHop((Math.floor(Math.random() * 30) + 1 ));
       var direction = Math.random() < 0.5 ? 1 : -1;
       votes.push([d,direction]);
   }
