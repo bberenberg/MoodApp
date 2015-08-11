@@ -8,10 +8,16 @@
 //Static stuff
 var defaultBody = 'Press up and down to indicate mood, and select to see the menu';
 var UI = require('ui');
-var Vector2 = require('vector2');
+var draw = require('graphing');
+var functions = require('functions');
+var Settings = require('settings');
+
+functions.launch();
+functions.settings();
+
 
 //Load historical data
-var votes = readLocalStorage();
+var votes = functions.readLocalStorage();
 
 //Populate the initial launch page with content
 var bodyContent = mainContent();
@@ -66,52 +72,7 @@ function vote(direction){
   main.body(mainContent());
 }
 
-//Reads in local storage for use
-function readLocalStorage(){
-	var localStorageRaw = JSON.parse(localStorage.getItem("moodapp"));
-	var localStorageClean = localStorageRaw;
-	if (localStorageRaw && localStorageRaw.length) {
-    for (var i=0; i <localStorageRaw.length; i++){
-      var oldDate = localStorageRaw[i][0];
-      var objectDate = new Date(oldDate);
-      localStorageClean[i][0] = objectDate;
-    }
-  }
-  if (localStorageClean && localStorageClean.length) {
-    return localStorageClean;
-  } else {
-    votes = [];
-    return votes;
-  }
-}
 
-//finds the % score
-function avgScore(date){
-  var score = 0;
-  var sum = sumScore(date);
-  if (sum[1]){
-    score = Math.round(((sum[0] / sum[1] * 100) + 100) / 2);
-  } else {
-    score = 50;
-  }
-  
-  return score;
-}
-
-//finds the sum score
-function sumScore(pastDate){
-  var sum = 0;
-  var counter = 0;
-  if (votes && votes.length){
-    for (var i=0; i <votes.length; i++){
-      if (votes[i][0].getTime() > pastDate.getTime()){
-        sum = sum + votes[i][1];
-        counter = counter + 1;
-      }
-    }
-  }
-  return [sum, counter];
-}
 
 //builds the main content
 function mainContent(){
@@ -119,29 +80,17 @@ function mainContent(){
   if (votes[0] === null){
     bodyContent = defaultBody;
   } else {
-    bodyContent = 'Todays mood sum is: ' + sumScore(startOfDay())[0] + ' and average score is: ' + avgScore(startOfDay()) + '%';                     
+    bodyContent = 'Todays mood sum is: ' + functions.sumScore(votes,functions.startOfDay())[0] + ' and average score is: ' + functions.avgScore(votes, functions.startOfDay()) + '%';                     
   }
   return bodyContent;
 }
 
-//figures out when today started
-function startOfDay(){
-  var start = new Date();
-  start.setHours(0,0,0,0);
-  return start;
-}
-
-//gives us a date object N number of days in the past
-function timeHop(days){
-  var hop = new Date(startOfDay() - (days * 24 * 60 * 60 * 1000));
-  return hop;
-}
 
 //builds out the menu contents
 function buildMenu(menu){
-  menu.item(0, 0, { title: '1 day avg (' + avgScore(timeHop(1)) + '%)' });
-  menu.item(0, 1, { title: '7 day avg (' + avgScore(timeHop(7)) + '%)' });
-  menu.item(0, 2, { title: '30 day avg (' + avgScore(timeHop(30)) + '%)' });
+  menu.item(0, 0, { title: '1 day avg (' + functions.avgScore(votes, functions.timeHop(1)) + '%)' });
+  menu.item(0, 1, { title: '7 day avg (' + functions.avgScore(votes, functions.timeHop(7)) + '%)' });
+  menu.item(0, 2, { title: '30 day avg (' + functions.avgScore(votes, functions.timeHop(30)) + '%)' });
   menu.item(0, 3, { title: 'Delete History' });
   menu.item(0, 4, { title: 'Data Generator' });
   return menu;
@@ -150,11 +99,11 @@ function buildMenu(menu){
 //handles the inputs for the menu
 function handleMenu(menu, e){
   if (e.itemIndex === 0) {
-    drawGraph(1,24);
+    draw.graph(votes,1,24);
   } else if (e.itemIndex == 1) {
-     drawGraph(7,7);
+     draw.graph(votes,7,7);
   } else if (e.itemIndex == 2) {
-     drawGraph(30,30);
+     draw.graph(votes,30,30);
   } else if (e.itemIndex == 3) {
     votes.length = 0;
     localStorage.setItem("moodapp", JSON.stringify(votes));
@@ -165,67 +114,20 @@ function handleMenu(menu, e){
   }
 }
 
-//bin the numbers into a histogram, and draw the graph
-function drawGraph(days,segments){
-  var graph = new UI.Window();
-  var background = new UI.Rect({ size: new Vector2(144, 168) });
-  var xAxis = new UI.Rect({ position: new Vector2(0,72), size: new Vector2(144, 1), backgroundColor: 'black'});
-  var barWidth = 144 / segments;
-  graph.add(background);
-    
-  
-  //get just the scores for the time period we are looking at
-  var segmentScores = [];
-  for (var i=votes.length - 1; i >= 0; i--){
-    if (votes[i][0] > timeHop(days)){
-      segmentScores.push(votes[i]);
-    }
-  }
-
-  //bin the scores  
-  var results = {};
-  if (days == 1){
-    segmentScores.forEach(function(score) {
-      var hour = score[0].getHours();
-      results[hour] = (results[hour] || 0) + score[1];
-    });
-  } else {
-    segmentScores.forEach(function(score) {
-      var day = score[0].getDate();
-      results[day] = (results[day] || 0) + score[1];
-    });
-  }
-  
-  
-  //draw the scores
-  var columns = {};
-  for (var i = 0; i < segments; i++){
-    if (results[i]){
-      columns[i] = new UI.Rect({ position: new Vector2(barWidth * i, 72), size: new Vector2(barWidth, (12 * results[i])), borderColor: 'black', backgroundColor: 'white' });
-      graph.add(columns[i]);
-    }
-  }
-  graph.add(xAxis);
-  graph.show();
-}
-
 function dataGenerator(menu){
-  votes.length = 0;
+  // functions.schedule();
+/*  votes.length = 0;
   for (var i = 0; i < 100; i++){
-      var d = timeHop((Math.floor(Math.random() * 30) + 1 ));
+      var d = functions.timeHop((Math.floor(Math.random() * 30) + 1 ));
       var direction = Math.random() < 0.5 ? 1 : -1;
       votes.push([d,direction]);
   }
   localStorage.setItem("moodapp", JSON.stringify(votes));
   main.body(mainContent());
-  buildMenu(menu);
+  buildMenu(menu); */
+  functions.timer();
 }
 
-function printVotes(array){
-  for (var i = 0; i < array.length; i++){
-    console.log(array[i][0] + '  ' + array[i][1]);
-  }
-}
 
 Date.prototype.addHours= function(h){
     this.setHours(this.getHours()+h);

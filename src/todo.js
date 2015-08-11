@@ -22,3 +22,10 @@ function buildAffirmation(affirmation){
 // Do I need to be cleaning up my windows? http://developer.getpebble.com/docs/pebblejs/#window-hide
 
 // Config page: https://github.com/pebble/slate
+
+// reminders
+
+// Pebble.showSimpleNotificationOnPebble(title, text);
+
+// https://www.reddit.com/r/pebble/
+// Notification settings: http://i.imgur.com/P8kHHnO.png
