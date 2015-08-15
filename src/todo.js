@@ -29,3 +29,9 @@ function buildAffirmation(affirmation){
 
 // https://www.reddit.com/r/pebble/
 // Notification settings: http://i.imgur.com/P8kHHnO.png
+
+  //localStorage.setItem('moodapp_' + Pebble.getAccountToken() + '_timer', );
+//setTimeout(function(){ clearInterval(timer); console.log('cleared'); }, 30000);
+
+      //console.log('Pebble Account Token: ' + Pebble.getAccountToken());
+     // console.log('Pebble Watch Token: ' + Pebble.getWatchToken());

@@ -7,26 +7,23 @@ var Wakeup = require('wakeup');
 
 //gives us a date object N number of days in the past
 functions.timeHop = function(days) {
+  //myLogger.debug('starting timehop');
   var hop = new Date(functions.startOfDay() - (days * 24 * 60 * 60 * 1000));
   return hop;
 };
 
 //figures out when today started
 functions.startOfDay = function(){
+  //myLogger.debug('Finding start of day');
   var start = new Date();
   start.setHours(0,0,0,0);
   return start;
 };
 
-functions.printVotes =function(array){
-  for (var i = 0; i < array.length; i++){
-    console.log(array[i][0] + '  ' + array[i][1]);
-  }
-};
-
 
 //finds the sum score
 functions.sumScore = function(votes,pastDate){
+ // myLogger.debug('summing the votes');
   var sum = 0;
   var counter = 0;
   if (votes && votes.length){
@@ -42,6 +39,7 @@ functions.sumScore = function(votes,pastDate){
 
 //finds the % score
 functions.avgScore = function(votes,date){
+  //myLogger.debug('avg the scores');
   var score = 0;
   var sum = functions.sumScore(votes,date);
   if (sum[1]){
@@ -54,6 +52,7 @@ functions.avgScore = function(votes,date){
 
 //Reads in local storage for use
 functions.readLocalStorage = function(){
+  //myLogger.debug('read the local storage');
 	var localStorageRaw = JSON.parse(localStorage.getItem("moodapp"));
 	var localStorageClean = localStorageRaw;
 	if (localStorageRaw && localStorageRaw.length) {
@@ -72,6 +71,7 @@ functions.readLocalStorage = function(){
 };
 
 functions.settings = function(){
+  //myLogger.debug('handling settings');
   Settings.config(
     { url: 'http://tin.cr/moodapp/config/index.html' },
     function(e) {
@@ -85,7 +85,7 @@ functions.settings = function(){
 
       // Show the parsed response
       console.log(JSON.stringify(e.options));
-      
+      timer = functions.timer();
       // Show the raw response if parsing failed
       if (e.failed) {
         console.log(e.response);
@@ -95,12 +95,13 @@ functions.settings = function(){
 };
 
 functions.alert = function(){
+  //myLogger.debug('triggering alert');
   Light.trigger();
   Vibe.vibrate('short');
-  console.log('alert');
 };
 
 functions.schedule = function(){
+  //myLogger.debug('schedule the next wakeup');
   Wakeup.schedule(
     {
       // Set the wakeup event for one minute from now
@@ -125,19 +126,48 @@ functions.launch = function(){
       console.log('Woke up to ' + e.id + '! data: ' + JSON.stringify(e.data));
     } else {
       console.log('Regular launch not by a wakeup event.');
-      console.log('Pebble Account Token: ' + Pebble.getAccountToken());
-      console.log('Pebble Watch Token: ' + Pebble.getWatchToken());
+      if (!timer){
+        // FIX THIS SHIT IT IS BROKEN
+        timer = functions.timer();
+      }
+      var myLogger = functions.Logger();
+      myLogger.level = 'debug';
+      myLogger.debug('test logging output');
     }
   });
-}
+};
 
-functions.timer = function(){
-  console.log('test');
+functions.timer = function(timer){
+  //myLogger.debug('entered timer function');
+  if (timer){
+    clearInterval(timer);
+    console.log('cleared timer');
+  }
   var settings = Settings.option();
-  var timer = setInterval(functions.alert(), settings.reminder*100);
-  setTimeout(function(){ clearInterval(timer); console.log('cleared'); }, 30000);
-}
+  if (settings.reminder > 0){
+    timer = setInterval(functions.alert, settings.reminder*60000);
+    console.log('started new timer');
+    return timer;
+  }
+};
 
-functions.test = function(){
-  console.log('test');
-}
+functions.logFunction = function(logger, levels, level) {
+  return function() {
+    var args = Array.prototype.splice.call(arguments, 0);
+    if (levels.indexOf(level) <= levels.indexOf(logger.level)) {
+      console.log.apply(console, args);
+    }
+  };
+};
+
+functions.Logger = function() {
+  if (!(this instanceof functions.Logger)) {
+    return new functions.Logger();
+  }
+  var levels = ['always', 'error', 'warn', 'info', 'debug'];
+  for (var i = 0; i < levels.length; i++) {
+    this[levels[i]] = functions.logFunction(this, levels, levels[i]);
+  }
+  this.level = 'debug';
+  return this;
+};

@@ -10,35 +10,43 @@ draw.graph = function (votes,days,segments){
   var xAxis = new UI.Rect({ position: new Vector2(0,72), size: new Vector2(144, 1), backgroundColor: 'black'});
   var barWidth = 144 / segments;
   graph.add(background);
-    
+  
+  for (var i = 0; i < votes.length; i++){
+    console.log(votes[i][0].getDate());
+  }
   
   //get just the scores for the time period we are looking at
   var segmentScores = [];
-  for (var i=votes.length - 1; i >= 0; i--){
+  for (var i = votes.length - 1; i >= 0; i--){
     if (votes[i][0] > functions.timeHop(days)){
+      console.log(votes[i]);
       segmentScores.push(votes[i]);
     }
   }
-
+  
+  
+  
   //bin the scores  
-  var results = {};
+  var results = [];
   if (days == 1){
     segmentScores.forEach(function(score) {
-      var hour = score[0].getHours();
+      var hour = score[0].getHours() + 1;
+      console.log(hour);
       results[hour] = (results[hour] || 0) + score[1];
     });
   } else {
     segmentScores.forEach(function(score) {
       var day = score[0].getDate();
       results[day] = (results[day] || 0) + score[1];
+      console.log(day + ' ' + results[day]);
     });
   }
-  
   //draw the scores
   var columns = {};
-  for (var i = 0; i < segments; i++){
+  for (var i = 0; i <= segments; i++){
     if (results[i]){
-      columns[i] = new UI.Rect({ position: new Vector2(barWidth * i, 72), size: new Vector2(barWidth, (12 * results[i])), borderColor: 'black', backgroundColor: 'white' });
+      console.log(results[i]);
+      columns[i] = new UI.Rect({ position: new Vector2(barWidth * (i - 1), 72), size: new Vector2(barWidth, (-12 * results[i])), borderColor: 'black', backgroundColor: 'white' });
       graph.add(columns[i]);
     }
   }

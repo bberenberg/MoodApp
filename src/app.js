@@ -10,11 +10,11 @@ var defaultBody = 'Press up and down to indicate mood, and select to see the men
 var UI = require('ui');
 var draw = require('graphing');
 var functions = require('functions');
+//var diagnostics = require('diagnostics');
 var Settings = require('settings');
-
+var timer = '';
 functions.launch();
 functions.settings();
-
 
 //Load historical data
 var votes = functions.readLocalStorage();
@@ -40,10 +40,14 @@ main.show();
 //Handle voting up and down
 main.on('click', 'up', function(e) {
   vote(1);
+  timer = functions.timer(timer);
+  //myLogger.debug('vote up');
 });
 
 main.on('click', 'down', function(e) {
   vote(-1);
+  timer = functions.timer(timer);
+  //myLogger.debug('vote down');
 });
 
 //Menu handler
@@ -57,6 +61,7 @@ main.on('click', 'select', function(e) {
     main.body(mainContent());
   });
   menu.show();
+  //myLogger.debug('menu opened');
 });
 
 //Refreshes main content window I think? May be totally useless. Need to try removing this.
@@ -66,6 +71,7 @@ main.on('show', function() {
 
 //Handle the input to data for voting
 function vote(direction){
+  //myLogger.debug('writing votes');
   var d = new Date();
   votes.push([d,direction]);
   localStorage.setItem("moodapp", JSON.stringify(votes));
@@ -76,6 +82,7 @@ function vote(direction){
 
 //builds the main content
 function mainContent(){
+  //myLogger.debug('building the main page');
   bodyContent = '';
   if (votes[0] === null){
     bodyContent = defaultBody;
@@ -88,6 +95,7 @@ function mainContent(){
 
 //builds out the menu contents
 function buildMenu(menu){
+  //myLogger.debug('building the menu');
   menu.item(0, 0, { title: '1 day avg (' + functions.avgScore(votes, functions.timeHop(1)) + '%)' });
   menu.item(0, 1, { title: '7 day avg (' + functions.avgScore(votes, functions.timeHop(7)) + '%)' });
   menu.item(0, 2, { title: '30 day avg (' + functions.avgScore(votes, functions.timeHop(30)) + '%)' });
@@ -98,6 +106,7 @@ function buildMenu(menu){
 
 //handles the inputs for the menu
 function handleMenu(menu, e){
+  //myLogger.debug('handle the menu');
   if (e.itemIndex === 0) {
     draw.graph(votes,1,24);
   } else if (e.itemIndex == 1) {
@@ -110,13 +119,14 @@ function handleMenu(menu, e){
     main.body(mainContent());
     buildMenu(menu);
   } else if (e.itemIndex == 4) {
-    dataGenerator(menu);
+    controlledGenerator(menu);
   }
 }
 
 function dataGenerator(menu){
+  //myLogger.debug('data generator');
   // functions.schedule();
-/*  votes.length = 0;
+  votes.length = 0;
   for (var i = 0; i < 100; i++){
       var d = functions.timeHop((Math.floor(Math.random() * 30) + 1 ));
       var direction = Math.random() < 0.5 ? 1 : -1;
@@ -124,8 +134,19 @@ function dataGenerator(menu){
   }
   localStorage.setItem("moodapp", JSON.stringify(votes));
   main.body(mainContent());
-  buildMenu(menu); */
-  functions.timer();
+  buildMenu(menu);
+}
+
+function controlledGenerator(menu){
+  votes.length = 0;
+  for (var i = 0; i < 30; i++){
+      var d = functions.timeHop(i);
+      var direction = Math.random() < 0.5 ? 1 : -1;
+      votes.push([d,direction]);
+  }
+  localStorage.setItem("moodapp", JSON.stringify(votes));
+  main.body(mainContent());
+  buildMenu(menu);
 }
 
 
