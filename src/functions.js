@@ -71,18 +71,16 @@ functions.readLocalStorage = function(){
 };
 
 functions.settings = function(){
-  //myLogger.debug('handling settings');
   Settings.config(
     { url: 'http://tin.cr/moodapp/config/index.html' },
     function(e) {
       console.log('opening configurable');
-
-      // Reset color to red before opening the webview
-      Settings.option('reminder', '1');
+      Settings.option('reminder', '0');
+      Settings.option('vibration', true);
+      Settings.option('light', true);
     },
     function(e) {
       console.log('closed configurable');
-
       // Show the parsed response
       console.log(JSON.stringify(e.options));
       timer = functions.timer();
@@ -95,9 +93,14 @@ functions.settings = function(){
 };
 
 functions.alert = function(){
+  var settings = Settings.option();
   //myLogger.debug('triggering alert');
-  Light.trigger();
-  Vibe.vibrate('short');
+  if (settings.light){
+    Light.trigger();
+  }
+  if (settings.vibrate){
+    Vibe.vibrate('short');
+  }
 };
 
 functions.schedule = function(){
@@ -151,23 +154,25 @@ functions.timer = function(timer){
   }
 };
 
-functions.logFunction = function(logger, levels, level) {
-  return function() {
-    var args = Array.prototype.splice.call(arguments, 0);
-    if (levels.indexOf(level) <= levels.indexOf(logger.level)) {
-      console.log.apply(console, args);
-    }
-  };
-};
 
-functions.Logger = function() {
-  if (!(this instanceof functions.Logger)) {
-    return new functions.Logger();
+functions.dataGenerator = function(votes){
+  //myLogger.debug('data generator');
+  // functions.schedule();
+  votes.length = 0;
+  for (var i = 0; i < 100; i++){
+      var d = functions.timeHop((Math.floor(Math.random() * 30) + 1 ));
+      var direction = Math.random() < 0.5 ? 1 : -1;
+      votes.push([d,direction]);
   }
-  var levels = ['always', 'error', 'warn', 'info', 'debug'];
-  for (var i = 0; i < levels.length; i++) {
-    this[levels[i]] = functions.logFunction(this, levels, levels[i]);
+  localStorage.setItem("moodapp", JSON.stringify(votes));
+}
+
+functions.controlledGenerator = function(votes){
+  votes.length = 0;
+  for (var i = 0; i < 30; i++){
+      var d = functions.timeHop(i);
+      var direction = Math.random() < 0.5 ? 1 : -1;
+      votes.push([d,direction]);
   }
-  this.level = 'debug';
-  return this;
-};
+  localStorage.setItem("moodapp", JSON.stringify(votes));
+}

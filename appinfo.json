@@ -1,6 +1,7 @@
 {
     "appKeys": {},
     "capabilities": [
+        "location",
         "configurable"
     ],
     "companyName": "bberenberg@gmail.com",

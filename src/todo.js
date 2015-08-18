@@ -35,3 +35,26 @@ function buildAffirmation(affirmation){
 
       //console.log('Pebble Account Token: ' + Pebble.getAccountToken());
      // console.log('Pebble Watch Token: ' + Pebble.getWatchToken());
+
+//loggers
+
+functions.logFunction = function(logger, levels, level) {
+  return function() {
+    var args = Array.prototype.splice.call(arguments, 0);
+    if (levels.indexOf(level) <= levels.indexOf(logger.level)) {
+      console.log.apply(console, args);
+    }
+  };
+};
+
+functions.Logger = function() {
+  if (!(this instanceof functions.Logger)) {
+    return new functions.Logger();
+  }
+  var levels = ['always', 'error', 'warn', 'info', 'debug'];
+  for (var i = 0; i < levels.length; i++) {
+    this[levels[i]] = functions.logFunction(this, levels, levels[i]);
+  }
+  this.level = 'debug';
+  return this;
+};

@@ -72,8 +72,10 @@ main.on('show', function() {
 //Handle the input to data for voting
 function vote(direction){
   //myLogger.debug('writing votes');
+  var location = getCurrentLocation();
   var d = new Date();
-  votes.push([d,direction]);
+  console.log(location.lat + location.lon);
+  votes.push([d,direction,location]);
   localStorage.setItem("moodapp", JSON.stringify(votes));
   main.body(mainContent());
 }
@@ -119,38 +121,32 @@ function handleMenu(menu, e){
     main.body(mainContent());
     buildMenu(menu);
   } else if (e.itemIndex == 4) {
-    controlledGenerator(menu);
+    functions.dataGenerator(votes);
+    main.body(mainContent());
+    buildMenu(menu);
   }
 }
 
-function dataGenerator(menu){
-  //myLogger.debug('data generator');
-  // functions.schedule();
-  votes.length = 0;
-  for (var i = 0; i < 100; i++){
-      var d = functions.timeHop((Math.floor(Math.random() * 30) + 1 ));
-      var direction = Math.random() < 0.5 ? 1 : -1;
-      votes.push([d,direction]);
+function getCurrentLocation(){
+  var result = 0;
+  var locationOptions = {
+    enableHighAccuracy: true, 
+    maximumAge: 10000, 
+    timeout: 10000
+  };
+  function locationSuccess(pos) {
+    console.log('lat= ' + pos.coords.latitude + ' lon= ' + pos.coords.longitude);
+    result = {lat: pos.coords.latitude, lon: pos.coords.longitude};
   }
-  localStorage.setItem("moodapp", JSON.stringify(votes));
-  main.body(mainContent());
-  buildMenu(menu);
-}
-
-function controlledGenerator(menu){
-  votes.length = 0;
-  for (var i = 0; i < 30; i++){
-      var d = functions.timeHop(i);
-      var direction = Math.random() < 0.5 ? 1 : -1;
-      votes.push([d,direction]);
+  function locationError(err) {
+    console.log('location error (' + err.code + '): ' + err.message);
   }
-  localStorage.setItem("moodapp", JSON.stringify(votes));
-  main.body(mainContent());
-  buildMenu(menu);
+  navigator.geolocation.getCurrentPosition(locationSuccess, locationError, locationOptions);
+  return result;
 }
 
 
-Date.prototype.addHours= function(h){
+Date.prototype.addHours = function(h){
     this.setHours(this.getHours()+h);
     return this;
 };
