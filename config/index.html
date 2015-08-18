@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <title>MoodApp Configuration</title>
+  <link rel='stylesheet' type='text/css' href='css/slate.min.css'>
+  <script src='js/slate.min.js'></script>
+  <style>
+  .title {
+    padding: 15px 10px;
+    text-transform: uppercase;
+    font-family: 'PT Sans', sans-serif;
+    font-size: 1.2em;
+    font-weight: 500;
+    color: #888888;
+    text-align: center;
+  }
+  </style>
+  </head>
+
+  <body>
+    <h1 class='title'>MoodApp Configuration</h1>
+
+    <div class='item-container'>
+      <div class='item-container-content'>
+        <div class='item'>
+          Use this configuration page to choose the settings you would like applied to this app.
+        </div>
+      </div>
+    </div>
+    <div class='item-container'>
+      <div class='item-container-header'>Settings</div>
+      <div class='item-container-content'>
+        <label class='item'>
+          Reminders
+          <input id="reminder_slider" type="range" class="item-slider" name="slider-1" value="0">
+            <div class="item-input-wrapper item-slider-text">
+              <input id="reminder_counter" type="text" class="item-input" name="slider-1" value="0">
+            </div>
+        </label>
+      </div>
+      <div class='item-container-footer'>
+        Vibration reminders every n amount of minutes. Use 0 to disable.
+      </div>
+    </div>
+
+    <div class="item-container">
+      <div class="item-container-header">Alert Types</div>
+      <div class="item-container-content">
+        <label class="item">
+          Vibration
+          <input type="checkbox" class="item-toggle" id="vibration" checked>
+        </label>
+        <label class="item">
+          Light
+          <input type="checkbox" class="item-toggle" id="light" checked>
+        </label>
+      </div>
+    </div>
+
+
+    <div class='item-container'>
+      <div class='button-container'>
+        <input id='submit_button' type='button' class='item-button' value='SUBMIT'>
+      </div>
+    </div>
+  </body>
+  <script>
+  function getConfigData() {
+    var reminderSlider = document.getElementById('reminder_slider');
+    var vibrationToggle = document.getElementById("vibration");
+    var lightToggle = document.getElementById("light");
+
+    var options = {
+      'reminder': reminderSlider.value,
+      'vibration': vibrationToggle.checked,
+      'light': lightToggle.checked
+    };
+
+    // Save for next launch
+    localStorage['reminder'] = options['reminder'];
+    localStorage['light'] = options['light'];
+    localStorage['vibration'] = options['vibration'];
+
+    console.log('Got options: ' + JSON.stringify(options));
+    return options;
+  }
+
+  function getQueryParam(variable, defaultValue) {
+    var query = location.search.substring(1);
+    var vars = query.split('&');
+    for (var i = 0; i < vars.length; i++) {
+      var pair = vars[i].split('=');
+      if (pair[0] === variable) {
+        return decodeURIComponent(pair[1]);
+      }
+    }
+    return defaultValue || false;
+  }
+
+  var submitButton = document.getElementById('submit_button');
+  submitButton.addEventListener('click', function() {
+    console.log('Submit');
+
+    // Set the return URL depending on the runtime environment
+    var return_to = getQueryParam('return_to', 'pebblejs://close#');
+    document.location = return_to + encodeURIComponent(JSON.stringify(getConfigData()));
+  });
+
+  (function() {
+    var reminderSlider = document.getElementById('reminder_slider');
+    var reminderCounter = document.getElementById('reminder_counter');
+    var vibrationToggle = document.getElementById("vibration");
+    var lightToggle = document.getElementById("light");
+
+    // Load any previously saved configuration, if available
+    if(localStorage['reminder']) {
+      reminderSlider.value = JSON.parse(localStorage['reminder']);
+      reminderCounter.value = JSON.parse(localStorage['reminder']);
+      vibrationToggle.checked = JSON.parse(localStorage['vibration']);
+      lightToggle.checked = JSON.parse(localStorage['light']);
+    }
+  })();
+  </script>
+</html>
