@@ -2,15 +2,22 @@
  * Mood App
  *
  * Written by Boris Berenberg / http://tin.cr
+ * 
  */
 
 //Static stuff
 var defaultBody = 'Press up and down to indicate mood, and select to see the menu';
 var UI = require('ui');
-var Vector2 = require('vector2');
+var draw = require('graphing');
+var functions = require('functions');
+//var diagnostics = require('diagnostics');
+var Settings = require('settings');
+var timer = '';
+functions.launch();
+functions.settings();
 
 //Load historical data
-var votes = readLocalStorage();
+var votes = functions.readLocalStorage();
 
 //Populate the initial launch page with content
 var bodyContent = mainContent();
@@ -33,22 +40,15 @@ main.show();
 //Handle voting up and down
 main.on('click', 'up', function(e) {
   vote(1);
+  timer = functions.timer(timer);
+  //myLogger.debug('vote up');
 });
 
 main.on('click', 'down', function(e) {
   vote(-1);
+  timer = functions.timer(timer);
+  //myLogger.debug('vote down');
 });
-/*
-Future planned use for affirmations.
-
-main.on('longClick', 'down', function(e) {
-  var affirmation = new UI.Card({});
-  affirmation = buildAffirmation(affirmation);
-  affirmation.on('back', function(e) {
-    main.body(mainContent());
-  });
-  affirmation.show();
-});*/
 
 //Menu handler
 main.on('click', 'select', function(e) {
@@ -61,6 +61,7 @@ main.on('click', 'select', function(e) {
     main.body(mainContent());
   });
   menu.show();
+  //myLogger.debug('menu opened');
 });
 
 //Refreshes main content window I think? May be totally useless. Need to try removing this.
@@ -70,142 +71,82 @@ main.on('show', function() {
 
 //Handle the input to data for voting
 function vote(direction){
+  //myLogger.debug('writing votes');
+  var location = getCurrentLocation();
   var d = new Date();
-  votes.push([d,direction]);
+  console.log(location.lat + location.lon);
+  votes.push([d,direction,location]);
   localStorage.setItem("moodapp", JSON.stringify(votes));
   main.body(mainContent());
 }
 
-//Reads in local storage for use
-function readLocalStorage(){
-	var localStorageRaw = JSON.parse(localStorage.getItem("moodapp"));
-	var localStorageClean = localStorageRaw;
-	if (localStorageRaw && localStorageRaw.length) {
-    for (i=0; i <localStorageRaw.length; i++){
-      var oldDate = localStorageRaw[i][0];
-      var objectDate = new Date(oldDate);
-      localStorageClean[i][0] = objectDate;
-    }
-  }
-  if (localStorageClean && localStorageClean.length) {
-    return localStorageClean;
-  } else {
-    votes = [];
-    return votes;
-  }
-}
 
-//finds the % score
-function avgScore(date){
-  var score = 0;
-  var sum = sumScore(date);
-  if (sum[1]){
-    score = Math.round(((sum[0] / sum[1] * 100) + 100) / 2);
-  } else {
-    score = 50;
-  }
-  
-  return score;
-}
-
-//finds the sum score
-function sumScore(date){
-  var sum = 0;
-  var counter = 0;
-  if (votes && votes.length){
-    for (i=0; i <votes.length; i++){
-      if (votes[i][0].getTime() > date.getTime()){
-        sum = sum + votes[i][1];
-        counter = counter + 1;
-      }
-    }
-  }
-  return [sum, counter];
-}
 
 //builds the main content
 function mainContent(){
+  //myLogger.debug('building the main page');
   bodyContent = '';
   if (votes[0] === null){
     bodyContent = defaultBody;
   } else {
-    bodyContent = 'Todays mood sum is: ' + sumScore(startOfDay())[0] + ' and average score is: ' + avgScore(startOfDay()) + '%';                     
+    bodyContent = 'Todays mood sum is: ' + functions.sumScore(votes,functions.startOfDay())[0] + ' and average score is: ' + functions.avgScore(votes, functions.startOfDay()) + '%';                     
   }
   return bodyContent;
 }
 
-//figures out when today started
-function startOfDay(){
-  var start = new Date();
-  start.setHours(0,0,0,0);
-  return start;
-}
-
-//gives us a date object N number of days in the past
-function timeHop(days){
-  var hop = new Date(new Date().getTime() - (days * 24 * 60 * 60 * 1000));
-  return hop;
-}
 
 //builds out the menu contents
 function buildMenu(menu){
-  menu.item(0, 0, { title: '1 day avg (' + avgScore(timeHop(1)) + '%)' });
-  menu.item(0, 1, { title: '7 day avg (' + avgScore(timeHop(7)) + '%)' });
-  menu.item(0, 2, { title: '30 day avg (' + avgScore(timeHop(30)) + '%)' });
+  //myLogger.debug('building the menu');
+  menu.item(0, 0, { title: '1 day avg (' + functions.avgScore(votes, functions.timeHop(1)) + '%)' });
+  menu.item(0, 1, { title: '7 day avg (' + functions.avgScore(votes, functions.timeHop(7)) + '%)' });
+  menu.item(0, 2, { title: '30 day avg (' + functions.avgScore(votes, functions.timeHop(30)) + '%)' });
   menu.item(0, 3, { title: 'Delete History' });
+  menu.item(0, 4, { title: 'Data Generator' });
   return menu;
 }
 
 //handles the inputs for the menu
 function handleMenu(menu, e){
+  //myLogger.debug('handle the menu');
   if (e.itemIndex === 0) {
-    drawGraph(1,24);
+    draw.graph(votes,1,24);
+  } else if (e.itemIndex == 1) {
+     draw.graph(votes,7,7);
+  } else if (e.itemIndex == 2) {
+     draw.graph(votes,30,30);
   } else if (e.itemIndex == 3) {
     votes.length = 0;
     localStorage.setItem("moodapp", JSON.stringify(votes));
     main.body(mainContent());
     buildMenu(menu);
+  } else if (e.itemIndex == 4) {
+    functions.dataGenerator(votes);
+    main.body(mainContent());
+    buildMenu(menu);
   }
 }
 
-function drawGraph(days,segments){
-  var graph = new UI.Window();
-  var background = new UI.Rect({ size: new Vector2(144, 168) });
-  var barWidth = 144 / segments;
-  graph.add(background);
-  var segmentScores = [];
-  for (i=votes.length - 1; i >= 0; i--){
-    if (votes[i][0] > timeHop(days)){
-      segmentScores[i] = votes[i];
-    }
+function getCurrentLocation(){
+  var result = 0;
+  var locationOptions = {
+    enableHighAccuracy: true, 
+    maximumAge: 10000, 
+    timeout: 10000
+  };
+  function locationSuccess(pos) {
+    console.log('lat= ' + pos.coords.latitude + ' lon= ' + pos.coords.longitude);
+    result = {lat: pos.coords.latitude, lon: pos.coords.longitude};
   }
-  var graphScores = [0];
-  for (s = 1; s <= segments; s++){
-    for (i = 0; i < segmentScores.length; i++){
-      var scoreDate = segmentScores[i][0];
-      if (scoreDate > timeHop(days) && scoreDate < timeHop(days / segments * s).addHours(1)){
-        graphScores[s] = graphScores[s-1] + segmentScores[i][1]; 
-      }
-    }
+  function locationError(err) {
+    console.log('location error (' + err.code + '): ' + err.message);
   }
-  var columns = new Array();
-  for (i = 0; i < segments; i++){
-    columns[i] = new UI.Rect({ position: new Vector2(barWidth * i, 72), size: new Vector2(barWidth * (i+1), 72 + (12 * graphScores[i])) });
-    columns[i].backgroundColor("black");
-    graph.add(columns[i]);
-  }
-  graph.show();
+  navigator.geolocation.getCurrentPosition(locationSuccess, locationError, locationOptions);
+  return result;
 }
 
-/*
-This will be used to build the affirmation card in the future.
 
-function buildAffirmation(affirmation){
-  affirmation.body('test');
-  return affirmation;
-} */
-
-Date.prototype.addHours= function(h){
+Date.prototype.addHours = function(h){
     this.setHours(this.getHours()+h);
     return this;
-}
+};
