@@ -1,0 +1,2 @@
+#reminderOptions[data-section="noReminders"]{display: none;}
+#reminderOptions[data-section="randomReminders"] .frequencyController {display: none;}

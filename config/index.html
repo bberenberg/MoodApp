@@ -3,6 +3,7 @@
   <head>
   <title>MoodApp Configuration</title>
   <link rel='stylesheet' type='text/css' href='css/slate.min.css'>
+  <link rel='stylesheet' type='text/css' href='css/moodapp.css'>
   <script src='js/slate.min.js'></script>
   <style>
   .title {
@@ -18,51 +19,53 @@
   </head>
 
   <body>
-    <h1 class='title'>MoodApp Configuration</h1>
-
+    <h1 class='title'>What settings would you like?</h1>
     <div class='item-container'>
-      <div class='item-container-content'>
-        <div class='item'>
-          Use this configuration page to choose the settings you would like applied to this app.
+      <div class="item-container">
+        <div class="item-container-header">Reminders</div>
+        <div class="item-container-content">
+          <div class="item tab-buttons reminderOptionButtons">
+            <a name="tab-1" class="tab-button active" id="noReminders">None</a>
+            <a name="tab-1" class="tab-button" id="timeReminders">Time Based</a>
+            <a name="tab-1" class="tab-button" id="randomReminders">Random</a>
+          </div>
+        </div>
+      </div>
+      <div id="reminderOptions" data-section="noReminders">
+        <div class='item-container-content frequencyController'>
+          <label class="item">
+            Time unit
+            <select name="select-1" dir='rtl' class="item-select">
+              <option class="item-select-option" selected>Minutes</option>
+              <option class="item-select-option">Hours</option>
+            </select>
+          </label>
+          <label class='item'>
+              <div class="item-input-wrapper">
+                  <input type="text" class="item-input" name="input-1" placeholder="Enter how often you want reminders. Units selected above.">
+              </div>
+          </label>
+        </div>
+      <div class="item-container reminderType">
+        <div class="item-container-header">Reminder Alert Types</div>
+        <div class="item-container-content">
+          <label class="item">
+            Vibration
+            <input type="checkbox" class="item-toggle" id="vibration" checked>
+          </label>
+          <label class="item">
+            Light
+            <input type="checkbox" class="item-toggle" id="light" checked>
+          </label>
         </div>
       </div>
     </div>
-    <div class='item-container'>
-      <div class='item-container-header'>Settings</div>
-      <div class='item-container-content'>
-        <label class='item'>
-          Reminders
-          <input id="reminder_slider" type="range" class="item-slider" name="slider-1" value="0">
-            <div class="item-input-wrapper item-slider-text">
-              <input id="reminder_counter" type="text" class="item-input" name="slider-1" value="0">
-            </div>
-        </label>
-      </div>
-      <div class='item-container-footer'>
-        Vibration reminders every n amount of minutes. Use 0 to disable.
-      </div>
-    </div>
-
-    <div class="item-container">
-      <div class="item-container-header">Alert Types</div>
-      <div class="item-container-content">
-        <label class="item">
-          Vibration
-          <input type="checkbox" class="item-toggle" id="vibration" checked>
-        </label>
-        <label class="item">
-          Light
-          <input type="checkbox" class="item-toggle" id="light" checked>
-        </label>
-      </div>
-    </div>
-
     <div class="item-container">
       <div class="item-container-header">Location tracking</div>
       <div class="item-container-content">
         <label class="item">
           Track location with mood
-          <input type="checkbox" class="item-toggle" id="location">
+          <input type="checkbox" class="item-toggle" id="location" checked>
         </label>
       </div>
     </div>
@@ -86,6 +89,13 @@
     </div>
   </body>
   <script>
+  $('.reminderOptionButtons').on('click', selectSection);
+
+  function selectSection (e){
+    var target = e.target;
+    var section = target.id;
+    $('#reminderOptions').attr('data-section',section);
+  };
   function getConfigData() {
     var reminderSlider = document.getElementById('reminder_slider');
     var vibrationToggle = document.getElementById("vibration");
