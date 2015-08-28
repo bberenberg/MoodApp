@@ -17,7 +17,6 @@
   }
   </style>
   </head>
-
   <body>
     <h1 class='title'>What settings would you like?</h1>
     <div class='item-container'>
@@ -25,9 +24,9 @@
         <div class="item-container-header">Reminders</div>
         <div class="item-container-content">
           <div class="item tab-buttons reminderOptionButtons">
-            <a name="tab-1" class="tab-button active" id="noReminders">None</a>
-            <a name="tab-1" class="tab-button" id="timeReminders">Time Based</a>
-            <a name="tab-1" class="tab-button" id="randomReminders">Random</a>
+            <a name="tab-1" class="tab-button reminders" id="noReminders">None</a>
+            <a name="tab-1" class="tab-button reminders" id="timeReminders">Time Based</a>
+            <a name="tab-1" class="tab-button reminders" id="randomReminders">Random</a>
           </div>
         </div>
       </div>
@@ -35,14 +34,14 @@
         <div class='item-container-content frequencyController'>
           <label class="item">
             Time unit
-            <select name="select-1" dir='rtl' class="item-select">
-              <option class="item-select-option" selected>Minutes</option>
-              <option class="item-select-option">Hours</option>
+            <select name="select-1" dir='rtl' class="item-select" id="reminderIntervalUnitSelector">
+              <option class="item-select-option" selected value="0">Minutes</option>
+              <option class="item-select-option" value="1">Hours</option>
             </select>
           </label>
           <label class='item'>
               <div class="item-input-wrapper">
-                  <input type="text" class="item-input" name="input-1" placeholder="Enter how often you want reminders. Units selected above.">
+                  <input id="reminderInterval" type="number" min="1" max="60" class="item-input" name="input-1" placeholder="Enter how often you want reminders. Units selected above.">
               </div>
           </label>
         </div>
@@ -89,31 +88,46 @@
     </div>
   </body>
   <script>
+  var reminderMode = "none";
   $('.reminderOptionButtons').on('click', selectSection);
+
 
   function selectSection (e){
     var target = e.target;
     var section = target.id;
+    reminderMode = section;
+    setSection(section);
+  }
+
+  function setSection (section){
     $('#reminderOptions').attr('data-section',section);
-  };
+  }
+
   function getConfigData() {
-    var reminderSlider = document.getElementById('reminder_slider');
+    var reminderIntervalUnit = document.getElementById('reminderIntervalUnitSelector');
+    var reminderInterval = document.getElementById('reminderInterval');
     var vibrationToggle = document.getElementById("vibration");
     var lightToggle = document.getElementById("light");
     var locationToggle = document.getElementById("location");
+    var reminderModeSelector = $(".tab-button.active");
+    // this is returning undefined, figure out why
 
     var options = {
-      'reminder': reminderSlider.value,
+      'reminderInterval': reminderInterval.value,
       'vibration': vibrationToggle.checked,
       'light': lightToggle.checked,
-      'location': locationToggle.checked
+      'location': locationToggle.checked,
+      'reminderIntervalUnit': reminderIntervalUnit.value,
+      'reminderMode': reminderModeSelector.id
     };
 
     // Save for next launch
-    localStorage['reminder'] = options['reminder'];
+    localStorage['reminderInterval'] = options['reminderInterval'];
     localStorage['light'] = options['light'];
     localStorage['vibration'] = options['vibration'];
     localStorage['location'] = options['location'];
+    localStorage['reminderIntervalUnit'] = options['reminderIntervalUnit'];
+    localStorage['reminderMode'] = options['reminderMode'];
 
     console.log('Got options: ' + JSON.stringify(options));
     return options;
@@ -134,26 +148,27 @@
   var submitButton = document.getElementById('submit_button');
   submitButton.addEventListener('click', function() {
     console.log('Submit');
-
     // Set the return URL depending on the runtime environment
     var return_to = getQueryParam('return_to', 'pebblejs://close#');
     document.location = return_to + encodeURIComponent(JSON.stringify(getConfigData()));
   });
 
   (function() {
-    var reminderSlider = document.getElementById('reminder_slider');
-    var reminderCounter = document.getElementById('reminder_counter');
+    var reminderIntervalUnit = document.getElementById('reminderIntervalUnitSelector');
+    var reminderInterval = document.getElementById('reminderInterval');
     var vibrationToggle = document.getElementById("vibration");
     var lightToggle = document.getElementById("light");
     var locationToggle = document.getElementById("location");
+    var reminderModeSelector = $(".tab-button.active.reminders");
 
     // Load any previously saved configuration, if available
-    if(localStorage['reminder']) {
-      reminderSlider.value = JSON.parse(localStorage['reminder']);
-      reminderCounter.value = JSON.parse(localStorage['reminder']);
+    if(localStorage['reminderMode']) {
+      reminderInterval.value = JSON.parse(localStorage['reminderInterval']);
       vibrationToggle.checked = JSON.parse(localStorage['vibration']);
       lightToggle.checked = JSON.parse(localStorage['light']);
       locationToggle.checked = JSON.parse(localStorage['location']);
+      reminderIntervalUnit.value = JSON.parse(localStorage['reminderInterval']);
+      getElementById(JSON.parse(localStorage['reminderMode']) += Active);
     }
   })();
   </script>
