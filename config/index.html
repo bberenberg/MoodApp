@@ -36,12 +36,12 @@
             Time unit
             <select name="select-1" dir='rtl' class="item-select" id="reminderIntervalUnitSelector">
               <option class="item-select-option" selected value="0">Minutes</option>
-              <option class="item-select-option" value="1">Hours</option>
+              <option class="item-select-option" value="60">Hours</option>
             </select>
           </label>
           <label class='item'>
               <div class="item-input-wrapper">
-                  <input id="reminderInterval" type="number" min="1" max="60" class="item-input" name="input-1" placeholder="Enter how often you want reminders. Units selected above.">
+                  <input id="reminderInterval" type="number" min="1" max="60" value="1" class="item-input" name="input-1" placeholder="Enter how often you want reminders. Units selected above.">
               </div>
           </label>
         </div>
@@ -167,7 +167,7 @@
       vibrationToggle.checked = JSON.parse(localStorage['vibration']);
       lightToggle.checked = JSON.parse(localStorage['light']);
       locationToggle.checked = JSON.parse(localStorage['location']);
-      reminderIntervalUnit.value = JSON.parse(localStorage['reminderInterval']);
+      reminderIntervalUnit.value = JSON.parse(localStorage['reminderIntervalUnit']);
       reminderModeSelector.className += " active";
       setSection(reminderModeSelector.id);
     }
