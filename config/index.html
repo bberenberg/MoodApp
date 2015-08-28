@@ -118,7 +118,7 @@
       'light': lightToggle.checked,
       'location': locationToggle.checked,
       'reminderIntervalUnit': reminderIntervalUnit.value,
-      'reminderMode': reminderModeSelector.id
+      'reminderMode': reminderModeSelector.attr('id')
     };
 
     // Save for next launch
@@ -159,7 +159,7 @@
     var vibrationToggle = document.getElementById("vibration");
     var lightToggle = document.getElementById("light");
     var locationToggle = document.getElementById("location");
-    var reminderModeSelector = $(".tab-button.active.reminders");
+    var reminderModeSelector = document.getElementById(localStorage['reminderMode']);
 
     // Load any previously saved configuration, if available
     if(localStorage['reminderMode']) {
@@ -168,7 +168,8 @@
       lightToggle.checked = JSON.parse(localStorage['light']);
       locationToggle.checked = JSON.parse(localStorage['location']);
       reminderIntervalUnit.value = JSON.parse(localStorage['reminderInterval']);
-      getElementById(JSON.parse(localStorage['reminderMode']) += Active);
+      reminderModeSelector.className += " active";
+      setSection(reminderModeSelector.id);
     }
   })();
   </script>
