@@ -37,7 +37,7 @@ function buildAffirmation(affirmation){
      // console.log('Pebble Watch Token: ' + Pebble.getWatchToken());
 
 //loggers
-
+/*
 functions.logFunction = function(logger, levels, level) {
   return function() {
     var args = Array.prototype.splice.call(arguments, 0);
@@ -58,3 +58,4 @@ functions.Logger = function() {
   this.level = 'debug';
   return this;
 };
+*/

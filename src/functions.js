@@ -75,9 +75,11 @@ functions.settings = function(){
     { url: 'http://tin.cr/moodapp/config/index.html' },
     function(e) {
       console.log('opening configurable');
-      Settings.option('reminder', '0');
+      Settings.option('reminderInterval', '0');
+      Settings.option('reminderIntervalUnit', '0');
       Settings.option('vibration', true);
       Settings.option('light', true);
+      Settings.option('reminderMode', '1');
     },
     function(e) {
       console.log('closed configurable');
@@ -147,8 +149,8 @@ functions.timer = function(timer){
     console.log('cleared timer');
   }
   var settings = Settings.option();
-  if (settings.reminder > 0){
-    timer = setInterval(functions.alert, settings.reminder*60000);
+  if (settings.reminderMode != "noReminders"){
+    timer = setInterval(functions.alert, settings.reminderInterval*60000*settings.reminderIntervalUnit);
     console.log('started new timer');
     return timer;
   }
@@ -165,7 +167,7 @@ functions.dataGenerator = function(votes){
       votes.push([d,direction]);
   }
   localStorage.setItem("moodapp", JSON.stringify(votes));
-}
+};
 
 functions.controlledGenerator = function(votes){
   votes.length = 0;
@@ -175,4 +177,4 @@ functions.controlledGenerator = function(votes){
       votes.push([d,direction]);
   }
   localStorage.setItem("moodapp", JSON.stringify(votes));
-}
+};

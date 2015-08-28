@@ -4,7 +4,7 @@
         ""
     ],
     "companyName": "bberenberg@gmail.com",
-    "longName": "Mood App",
+    "longName": "MoodApp",
     "projectType": "pebblejs",
     "resources": {
         "media": [
@@ -37,7 +37,7 @@
         ]
     },
     "sdkVersion": "3",
-    "shortName": "Mood App",
+    "shortName": "MoodApp",
     "uuid": "1b6ffe3c-4e75-417f-8d61-15a9bc473408",
     "versionCode": 1,
     "versionLabel": "1.0",

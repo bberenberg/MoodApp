@@ -1,3 +1,5 @@
+/*
+
 Bar graph not obvious to enter
 Up and down also not obvious
 Reminders phrase not clear, communicate that it is mins better
@@ -29,3 +31,5 @@ Support or help with goals
 - Today was a good day
 Guide to anywhere
 - small silly tasks
+
+*/
