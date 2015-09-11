@@ -4,6 +4,7 @@ var Settings = require('settings');
 var Vibe = require('ui/vibe');
 var Light = require('ui/light');
 var Wakeup = require('wakeup');
+var timer;
 
 //gives us a date object N number of days in the past
 functions.timeHop = function(days) {
@@ -99,9 +100,11 @@ functions.alert = function(){
   //myLogger.debug('triggering alert');
   if (settings.light){
     Light.trigger();
+    console.log('alert light');
   }
   if (settings.vibrate){
     Vibe.vibrate('short');
+    console.log('alert vibe');
   }
 };
 
@@ -149,9 +152,12 @@ functions.timer = function(timer){
     console.log('cleared timer');
   }
   var settings = Settings.option();
-  if (settings.reminderMode != "noReminders"){
+  if (settings.reminderMode == "timeReminders"){
     timer = setInterval(functions.alert, settings.reminderInterval*60000*settings.reminderIntervalUnit);
-    console.log('started new timer');
+    return timer;
+  }
+  else if (settings.reminderMode == "randomReminders"){
+    timer = setInterval(functions.alert, getRandomInt(20,120)*60000);
     return timer;
   }
 };
@@ -178,3 +184,7 @@ functions.controlledGenerator = function(votes){
   }
   localStorage.setItem("moodapp", JSON.stringify(votes));
 };
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}

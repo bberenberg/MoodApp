@@ -59,3 +59,5 @@ functions.Logger = function() {
   return this;
 };
 */
+
+//make random reminders change interval after trigger
