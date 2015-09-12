@@ -26,12 +26,12 @@ var bodyContent = mainContent();
 var main = new UI.Card({  
   title: 'Mood App',
   icon: 'images/mood28.png',
-  body: bodyContent
+  body: bodyContent,
   //needs the icons I think? Causes blank page in the current form.
-  /*  action: {
-    up: 'images/action_icon_plus.png',
-    down: 'images/action_icon_minus.png'
-  } */
+  action: {
+    up: 'images/plusd.png',
+    down: 'images/minusd.png'
+  } 
 });
 
 //Show the launch page

@@ -138,9 +138,9 @@ functions.launch = function(){
         // FIX THIS SHIT IT IS BROKEN
         timer = functions.timer();
       }
-      var myLogger = functions.Logger();
-      myLogger.level = 'debug';
-      myLogger.debug('test logging output');
+      //var myLogger = functions.Logger();
+      //myLogger.level = 'debug';
+      //myLogger.debug('test logging output');
     }
   });
 };
