@@ -30,7 +30,8 @@ var main = new UI.Card({
   //needs the icons I think? Causes blank page in the current form.
   action: {
     up: 'images/plusd.png',
-    down: 'images/minusd.png'
+    down: 'images/minusd.png',
+    select: 'images/arrowd.png'
   } 
 });
 
