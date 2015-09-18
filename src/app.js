@@ -160,11 +160,9 @@ function midnightReset() {
   var night = new Date(
     now.getFullYear(),
     now.getMonth(),
-   // now.getDate() + 1,
-    now.getDate(),
-    18, 27, 0 
+    now.getDate() + 1,
+    0, 0, 0 
   );
   var msTillMidnight = night.getTime() - now.getTime();
-  
-  midnightTimer = setTimeout(function(){ votes.length = 0;main.body(mainContent()) }, msTillMidnight);
+  midnightTimer = setTimeout(function(){ main.body(mainContent()) }, msTillMidnight);
 }

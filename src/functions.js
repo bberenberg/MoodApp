@@ -102,9 +102,16 @@ functions.alert = function(){
     Light.trigger();
     console.log('alert light');
   }
-  if (settings.vibrate){
+  if (settings.vibration){
     Vibe.vibrate('short');
     console.log('alert vibe');
+  }
+  if (settings.reminderMode == "randomReminders"){
+    clearInterval(timer);
+    var temp = getRandomInt(1,5)*60000;
+    console.log(temp);
+    timer = setInterval(functions.alert, temp);
+    return timer;
   }
 };
 
@@ -157,7 +164,7 @@ functions.timer = function(timer){
     return timer;
   }
   else if (settings.reminderMode == "randomReminders"){
-    timer = setInterval(functions.alert, getRandomInt(20,120)*60000);
+    timer = setInterval(functions.alert, getRandomInt(1,5)*60000);
     return timer;
   }
 };
