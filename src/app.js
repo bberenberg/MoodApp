@@ -12,7 +12,8 @@ var draw = require('graphing');
 var functions = require('functions');
 //var diagnostics = require('diagnostics');
 var Settings = require('settings');
-var timer = '';
+var timer;
+var midnightTimer;
 functions.launch();
 functions.settings();
 
@@ -79,6 +80,7 @@ function vote(direction){
   votes.push([d,direction,location]);
   localStorage.setItem("moodapp", JSON.stringify(votes));
   main.body(mainContent());
+  midnightReset();
 }
 
 
@@ -90,7 +92,7 @@ function mainContent(){
   if (votes[0] === null){
     bodyContent = defaultBody;
   } else {
-    bodyContent = 'Todays mood sum is: ' + functions.sumScore(votes,functions.startOfDay())[0] + ' and average score is: ' + functions.avgScore(votes, functions.startOfDay()) + '%';                     
+    bodyContent = 'Todays mood sum is: ' + functions.sumScore(votes,functions.startOfDay())[0];                     
   }
   return bodyContent;
 }
@@ -99,11 +101,12 @@ function mainContent(){
 //builds out the menu contents
 function buildMenu(menu){
   //myLogger.debug('building the menu');
-  menu.item(0, 0, { title: '1 day avg (' + functions.avgScore(votes, functions.timeHop(1)) + '%)' });
-  menu.item(0, 1, { title: '7 day avg (' + functions.avgScore(votes, functions.timeHop(7)) + '%)' });
-  menu.item(0, 2, { title: '30 day avg (' + functions.avgScore(votes, functions.timeHop(30)) + '%)' });
-  //menu.item(0, 4, { title: 'Delete History' });
+
+  menu.item(0, 0, { title: '1 day avg (' + functions.sumScore(votes, functions.timeHop(1))[0] + ')' });
+  menu.item(0, 1, { title: '7 day avg (' + functions.sumScore(votes, functions.timeHop(7))[0] + ')' });
+  menu.item(0, 2, { title: '30 day avg (' + functions.sumScore(votes, functions.timeHop(30))[0] + ')' });
   menu.item(0, 3, { title: 'Data Generator' });
+  //menu.item(0, 4, { title: 'Delete History' });
   return menu;
 }
 
@@ -151,3 +154,17 @@ Date.prototype.addHours = function(h){
     this.setHours(this.getHours()+h);
     return this;
 };
+
+function midnightReset() {
+  var now = new Date();
+  var night = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+   // now.getDate() + 1,
+    now.getDate(),
+    18, 27, 0 
+  );
+  var msTillMidnight = night.getTime() - now.getTime();
+  
+  midnightTimer = setTimeout(function(){ votes.length = 0;main.body(mainContent()) }, msTillMidnight);
+}
