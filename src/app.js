@@ -102,8 +102,8 @@ function buildMenu(menu){
   menu.item(0, 0, { title: '1 day avg (' + functions.avgScore(votes, functions.timeHop(1)) + '%)' });
   menu.item(0, 1, { title: '7 day avg (' + functions.avgScore(votes, functions.timeHop(7)) + '%)' });
   menu.item(0, 2, { title: '30 day avg (' + functions.avgScore(votes, functions.timeHop(30)) + '%)' });
-  menu.item(0, 3, { title: 'Delete History' });
-  menu.item(0, 4, { title: 'Data Generator' });
+  //menu.item(0, 4, { title: 'Delete History' });
+  menu.item(0, 3, { title: 'Data Generator' });
   return menu;
 }
 
@@ -116,12 +116,12 @@ function handleMenu(menu, e){
      draw.graph(votes,7,7);
   } else if (e.itemIndex == 2) {
      draw.graph(votes,30,30);
-  } else if (e.itemIndex == 3) {
+  } else if (e.itemIndex == 4) {
     votes.length = 0;
     localStorage.setItem("moodapp", JSON.stringify(votes));
     main.body(mainContent());
     buildMenu(menu);
-  } else if (e.itemIndex == 4) {
+  } else if (e.itemIndex == 3) {
     functions.dataGenerator(votes);
     main.body(mainContent());
     buildMenu(menu);
