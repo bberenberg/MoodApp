@@ -169,7 +169,6 @@ functions.timer = function(timer){
   }
 };
 
-
 functions.dataGenerator = function(votes){
   //myLogger.debug('data generator');
   // functions.schedule();

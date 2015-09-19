@@ -50,11 +50,21 @@ draw.graph = function (votes,intervals,segments){
     return a.timestamp-b.timestamp;
   });
   
+  var max = 0;
+  var min = 0;
+  for (i = 0; i < results.length; i++){
+    if (results[i].score > max){
+      max = results[i].score;
+    }
+    else if (results[i].score < min){
+      min = results[i].score;
+    }
+  }
+  var range = max - min;
   //draw the scores
-  console.log(results.length);
+
   results.forEach(function(item, arrIndex){
-      console.log(item.timestamp + " " + item.score);
-      var column = new UI.Rect({ position: new Vector2(barWidth * arrIndex, 72), size: new Vector2(barWidth, (-12 * item.score)), borderColor: 'black', backgroundColor: 'white' });
+      var column = new UI.Rect({ position: new Vector2(barWidth * arrIndex, 72), size: new Vector2(barWidth, (-1 * item.score * 72 / range)), borderColor: 'black', backgroundColor: 'white' });
       graph.add(column);
   });
   graph.add(xAxis);

@@ -17,13 +17,7 @@ function buildAffirmation(affirmation){
   return affirmation;
 } */
 
-// use this to add action icons: http://developer.getpebble.com/docs/pebblejs/#window-action-actiondef
-
 // Do I need to be cleaning up my windows? http://developer.getpebble.com/docs/pebblejs/#window-hide
-
-// Config page: https://github.com/pebble/slate
-
-// reminders
 
 // Pebble.showSimpleNotificationOnPebble(title, text);
 
