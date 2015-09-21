@@ -42,13 +42,13 @@ main.show();
 //Handle voting up and down
 main.on('click', 'up', function(e) {
   vote(1);
-  timer = functions.timer(timer);
+  functions.timer();
   //myLogger.debug('vote up');
 });
 
 main.on('click', 'down', function(e) {
   vote(-1);
-  timer = functions.timer(timer);
+  functions.timer();
   //myLogger.debug('vote down');
 });
 
@@ -83,8 +83,6 @@ function vote(direction){
   midnightReset();
 }
 
-
-
 //builds the main content
 function mainContent(){
   //myLogger.debug('building the main page');
@@ -97,7 +95,6 @@ function mainContent(){
   return bodyContent;
 }
 
-
 //builds out the menu contents
 function buildMenu(menu){
   //myLogger.debug('building the menu');
@@ -105,7 +102,7 @@ function buildMenu(menu){
   menu.item(0, 0, { title: '1 day avg (' + functions.sumScore(votes, functions.timeHop(1))[0] + ')' });
   menu.item(0, 1, { title: '7 day avg (' + functions.sumScore(votes, functions.timeHop(7))[0] + ')' });
   menu.item(0, 2, { title: '30 day avg (' + functions.sumScore(votes, functions.timeHop(30))[0] + ')' });
-  menu.item(0, 3, { title: 'Data Generator' });
+  //menu.item(0, 3, { title: 'Data Generator' });
   //menu.item(0, 4, { title: 'Delete History' });
   return menu;
 }
@@ -148,7 +145,6 @@ function getCurrentLocation(){
   navigator.geolocation.getCurrentPosition(locationSuccess, locationError, locationOptions);
   return result;
 }
-
 
 Date.prototype.addHours = function(h){
     this.setHours(this.getHours()+h);

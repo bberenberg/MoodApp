@@ -4,7 +4,6 @@ Bar graph not obvious to enter
 
 Grey subtext is non obvious
 
-
 More time options
 
 More detail on the graph

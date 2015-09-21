@@ -108,8 +108,11 @@ functions.alert = function(){
   }
   if (settings.reminderMode == "randomReminders"){
     clearInterval(timer);
-    var temp = getRandomInt(1,5)*60000;
-    console.log(temp);
+    var temp = getRandomInt(20,120)*60000;
+    var now = Date.now();
+    console.log('now ' + now);
+    console.log('interval ' + temp);
+    console.log('expected ' + now + temp);
     timer = setInterval(functions.alert, temp);
     return timer;
   }
@@ -152,7 +155,7 @@ functions.launch = function(){
   });
 };
 
-functions.timer = function(timer){
+functions.timer = function(){
   //myLogger.debug('entered timer function');
   if (timer){
     clearInterval(timer);
@@ -164,8 +167,17 @@ functions.timer = function(timer){
     return timer;
   }
   else if (settings.reminderMode == "randomReminders"){
-    timer = setInterval(functions.alert, getRandomInt(1,5)*60000);
+    var temp = getRandomInt(20,120)*60000;
+    var now = Date.now();
+    console.log('now ' + now);
+    console.log('interval ' + temp);
+    console.log('expected ' + now + temp);
+    timer = setInterval(functions.alert, temp);
     return timer;
+  }
+  else{
+    clearInterval(timer);
+    console.log('cleared timer');
   }
 };
 
