@@ -21,7 +21,6 @@ functions.startOfDay = function(){
   return start;
 };
 
-
 //finds the sum score
 functions.sumScore = function(votes,pastDate){
  // myLogger.debug('summing the votes');

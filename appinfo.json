@@ -29,11 +29,6 @@
                 "type": "font"
             },
             {
-                "file": "images/minusd.png",
-                "name": "IMAGES_MINUSD_PNG",
-                "type": "png"
-            },
-            {
                 "file": "images/mood28.png",
                 "menuIcon": true,
                 "name": "IMAGES_MOOD28_PNG",
@@ -42,6 +37,11 @@
             {
                 "file": "images/arrowd.png",
                 "name": "IMAGES_ARROWD_PNG",
+                "type": "png"
+            },
+            {
+                "file": "images/minusd.png",
+                "name": "IMAGES_MINUSD_PNG",
                 "type": "png"
             },
             {

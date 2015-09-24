@@ -12,7 +12,6 @@ var draw = require('graphing');
 var functions = require('functions');
 //var diagnostics = require('diagnostics');
 var Settings = require('settings');
-var timer;
 var midnightTimer;
 functions.launch();
 functions.settings();
@@ -73,14 +72,16 @@ main.on('show', function() {
 
 //Handle the input to data for voting
 function vote(direction){
-  //myLogger.debug('writing votes');
-  var location = getCurrentLocation();
-  var d = new Date();
-  console.log(location.lat + location.lon);
-  votes.push([d,direction,location]);
-  localStorage.setItem("moodapp", JSON.stringify(votes));
-  main.body(mainContent());
-  midnightReset();
+  var location = getCurrentLocation(function (err, location) {
+    if (err) {
+    }
+    var d = new Date();
+    votes.push([d,direction,location.lat, location.lon]);
+    console.log(JSON.stringify(votes));
+    localStorage.setItem("moodapp", JSON.stringify(votes));
+    main.body(mainContent());
+    midnightReset();
+  });
 }
 
 //builds the main content
@@ -98,12 +99,11 @@ function mainContent(){
 //builds out the menu contents
 function buildMenu(menu){
   //myLogger.debug('building the menu');
-
   menu.item(0, 0, { title: '1 day avg (' + functions.sumScore(votes, functions.timeHop(1))[0] + ')' });
   menu.item(0, 1, { title: '7 day avg (' + functions.sumScore(votes, functions.timeHop(7))[0] + ')' });
   menu.item(0, 2, { title: '30 day avg (' + functions.sumScore(votes, functions.timeHop(30))[0] + ')' });
-  //menu.item(0, 3, { title: 'Data Generator' });
-  //menu.item(0, 4, { title: 'Delete History' });
+  menu.item(0, 3, { title: 'Data Generator' });
+  menu.item(0, 4, { title: 'Delete History' });
   return menu;
 }
 
@@ -128,7 +128,7 @@ function handleMenu(menu, e){
   }
 }
 
-function getCurrentLocation(){
+function getCurrentLocation(callback){
   var result = 0;
   var locationOptions = {
     enableHighAccuracy: true, 
@@ -137,13 +137,12 @@ function getCurrentLocation(){
   };
   function locationSuccess(pos) {
     console.log('lat= ' + pos.coords.latitude + ' lon= ' + pos.coords.longitude);
-    result = {lat: pos.coords.latitude, lon: pos.coords.longitude};
+    callback(null, {lat: pos.coords.latitude, lon: pos.coords.longitude});
   }
   function locationError(err) {
-    console.log('location error (' + err.code + '): ' + err.message);
+    callback(err);
   }
   navigator.geolocation.getCurrentPosition(locationSuccess, locationError, locationOptions);
-  return result;
 }
 
 Date.prototype.addHours = function(h){
