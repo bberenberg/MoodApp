@@ -10,8 +10,13 @@ var defaultBody = 'Press up and down to indicate mood, and select to see the men
 var UI = require('ui');
 var draw = require('graphing');
 var functions = require('functions');
-//var diagnostics = require('diagnostics');
 var Settings = require('settings');
+
+//require('firebase230'); 
+//Firebase.INTERNAL.forceWebSockets(); 
+//var ref = new Firebase("https://moodapp.firebaseio.com");  
+
+
 var timer;
 var midnightTimer;
 functions.launch();
@@ -76,11 +81,12 @@ function vote(direction){
   //myLogger.debug('writing votes');
   var location = getCurrentLocation();
   var d = new Date();
-  console.log(location.lat + location.lon);
-  votes.push([d,direction,location]);
+  votes.push([d, direction, location, location.lat, location.lon]);
   localStorage.setItem("moodapp", JSON.stringify(votes));
   main.body(mainContent());
   midnightReset();
+  //var usersRef = ref.child(String(Pebble.getAccountToken()));
+  //usersRef.set(JSON.stringify(votes));
 }
 
 //builds the main content
