@@ -6,6 +6,8 @@ var Light = require('ui/light');
 var Wakeup = require('wakeup');
 var timer;
 
+
+
 //gives us a date object N number of days in the past
 functions.timeHop = function(days) {
   //myLogger.debug('starting timehop');
@@ -20,6 +22,7 @@ functions.startOfDay = function(){
   start.setHours(0,0,0,0);
   return start;
 };
+
 
 //finds the sum score
 functions.sumScore = function(votes,pastDate){
@@ -74,12 +77,9 @@ functions.settings = function(){
   Settings.config(
     { url: 'http://tin.cr/moodapp/config/index.html' },
     function(e) {
+      var votes = functions.readLocalStorage();
       console.log('opening configurable');
-      Settings.option('reminderInterval', '0');
-      Settings.option('reminderIntervalUnit', '0');
-      Settings.option('vibration', true);
-      Settings.option('light', true);
-      Settings.option('reminderMode', '1');
+      //Settings.option('accountToken', String(Pebble.getAccountToken()));
     },
     function(e) {
       console.log('closed configurable');

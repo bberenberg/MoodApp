@@ -7,15 +7,16 @@ var draw = module.exports;
 draw.graph = function (votes,intervals,segments){
   var graph = new UI.Window();
   var background = new UI.Rect({ size: new Vector2(144, 168) });
-  var xAxis = new UI.Rect({ position: new Vector2(0,71), size: new Vector2(144, 1), backgroundColor: 'black'});
+  var xAxis = new UI.Rect({ position: new Vector2(0,68), size: new Vector2(144, 1), backgroundColor: 'black'});
   var barWidth = 144 / segments;
   graph.add(background);
+  
   
   //get just the scores for the time period we are looking at
   var segmentScores = [];
   var firstInterval = functions.timeHop(intervals);
   for (var i = votes.length - 1; i >= 0; i--){
-    if (votes[i][0] > firstInterval){
+    if (votes[i][0] > firstInterval && votes[i][0] < functions.startOfDay() ){
       segmentScores.push({timestamp: votes[i][0], score: votes[i][1]});
     }
   }
@@ -64,9 +65,19 @@ draw.graph = function (votes,intervals,segments){
   //draw the scores
 
   results.forEach(function(item, arrIndex){
-      var column = new UI.Rect({ position: new Vector2(barWidth * arrIndex, 72), size: new Vector2(barWidth, (-1 * item.score * 72 / range)), borderColor: 'black', backgroundColor: 'white' });
+      var column = new UI.Rect({ position: new Vector2(barWidth * arrIndex, 68), size: new Vector2(barWidth, (-1 * item.score * 68 / range)), borderColor: 'black', backgroundColor: 'white' });
       graph.add(column);
   });
+  
+  var midnight = functions.startOfDay();
+  var dateRange;
+  if (intervals == 1){
+    dateRange = firstInterval.getMonth() + '/' + firstInterval.getDate();
+  } else {
+    dateRange = firstInterval.getMonth() + '/' + firstInterval.getDate() + ' - ' +  midnight.getMonth() + '/' + midnight.getDate();
+  }
+  var dateBar = new UI.Text({text: dateRange, textAlign: "center", backgroundColor: "black", position: new Vector2(0, 136), size: new Vector2(144, 16), font: 'gothic-14'});
   graph.add(xAxis);
+  graph.add(dateBar);
   graph.show(); 
 }; 

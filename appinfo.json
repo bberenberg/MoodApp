@@ -29,14 +29,14 @@
                 "type": "font"
             },
             {
-                "file": "images/mood28.png",
-                "menuIcon": true,
-                "name": "IMAGES_MOOD28_PNG",
+                "file": "images/arrowd.png",
+                "name": "IMAGES_ARROWD_PNG",
                 "type": "png"
             },
             {
-                "file": "images/arrowd.png",
-                "name": "IMAGES_ARROWD_PNG",
+                "file": "images/mood28.png",
+                "menuIcon": true,
+                "name": "IMAGES_MOOD28_PNG",
                 "type": "png"
             },
             {
