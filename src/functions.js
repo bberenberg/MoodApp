@@ -31,7 +31,7 @@ functions.sumScore = function(votes,pastDate, endDate){
   var counter = 0;
   if (votes && votes.length){
     for (var i=0; i <votes.length; i++){
-      if (votes[i][0].getTime() > pastDate.getTime() && votes[i][0].getTime() < endDate){
+      if (votes[i][0].getTime() >= pastDate.getTime() && votes[i][0].getTime() < endDate){
         sum = sum + votes[i][1];
         counter = counter + 1;
       }
@@ -187,15 +187,25 @@ functions.dataGenerator = function(votes){
       var direction = Math.random() < 0.5 ? 1 : -1;
       votes.push([d,direction]);
   }
+  var d = functions.timeHop(1);
+  votes.push([d,-1]);
   localStorage.setItem("moodapp", JSON.stringify(votes));
 };
 
 functions.controlledGenerator = function(votes){
   votes.length = 0;
-  for (var i = 0; i < 30; i++){
-      var d = functions.timeHop(i);
+  for (var i = 0; i < 48; i++){
+      var hour = (Math.floor(Math.random() * 23));
+      var now = new Date();
+      var d = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        hour, 0, 0 
+      );
       var direction = Math.random() < 0.5 ? 1 : -1;
       votes.push([d,direction]);
+    console.log(d + ' ' + direction);
   }
   localStorage.setItem("moodapp", JSON.stringify(votes));
 };

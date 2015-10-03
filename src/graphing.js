@@ -15,9 +15,16 @@ draw.graph = function (votes,intervals,segments){
   //get just the scores for the time period we are looking at
   var segmentScores = [];
   var firstInterval = functions.timeHop(intervals);
+  var end;
+  if (intervals === 0){
+    end = functions.timeHop(-1);
+  } else {
+    end = functions.startOfDay();
+  }
   for (var i = votes.length - 1; i >= 0; i--){
-    if (votes[i][0] > firstInterval && votes[i][0] < functions.startOfDay() ){
+    if (votes[i][0] >= firstInterval && votes[i][0] < end ){
       segmentScores.push({timestamp: votes[i][0], score: votes[i][1]});
+      console.log(votes[i][0] + ' ' + votes[i][1]);
     }
   }
 
@@ -25,15 +32,18 @@ draw.graph = function (votes,intervals,segments){
   for (i = segments ; i > 0; i--){
     if (intervals == 1){
       results.push({timestamp: functions.startOfDay().addHours(-i), score: 0});
-    } else{
+    } else if (intervals === 0){
+      results.push({timestamp: functions.startOfDay().addHours(24-i), score: 0});
+    } else {
       results.push({timestamp: functions.timeHop(i), score: 0});
     }
   }
+  
 
   results.forEach(function(result, arrIndex){
     var sum = 0;
     segmentScores.forEach(function(segment){
-      if (intervals == 1){
+      if (intervals == 1 || intervals === 0){
         if (segment.timestamp.getHours() == result.timestamp.getHours()){
           sum = sum + segment.score;
         }
@@ -71,7 +81,7 @@ draw.graph = function (votes,intervals,segments){
   
   var midnight = functions.startOfDay();
   var dateRange;
-  if (intervals == 1){
+  if (intervals == 1 || intervals === 0){
     dateRange = firstInterval.getMonth() + '/' + firstInterval.getDate();
   } else {
     dateRange = firstInterval.getMonth() + '/' + firstInterval.getDate() + ' - ' +  midnight.getMonth() + '/' + midnight.getDate();

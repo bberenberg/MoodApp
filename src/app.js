@@ -106,32 +106,36 @@ function mainContent(){
 function buildMenu(menu){
   //myLogger.debug('building the menu');
   var start = functions.startOfDay();
-  menu.item(0, 0, { title: 'Yesterday (' + functions.sumScore(votes, functions.timeHop(1), start)[0] + ')' });
-  menu.item(0, 1, { title: '7 day score (' + functions.sumScore(votes, functions.timeHop(7), start)[0] + ')' });
-  menu.item(0, 2, { title: '30 day score (' + functions.sumScore(votes, functions.timeHop(30), start)[0] + ')' });
-  menu.item(0, 3, { title: 'Data Generator' });
-  menu.item(0, 4, { title: 'Delete History' });
+  menu.item(0, 0, { title: 'Today (' + functions.sumScore(votes, start, functions.timeHop(-1))[0] + ')' });
+  menu.item(0, 1, { title: 'Yesterday (' + functions.sumScore(votes, functions.timeHop(1), start)[0] + ')' });
+  menu.item(0, 2, { title: '7 day score (' + functions.sumScore(votes, functions.timeHop(7), start)[0] + ')' });
+  menu.item(0, 3, { title: '30 day score (' + functions.sumScore(votes, functions.timeHop(30), start)[0] + ')' });
+  //menu.item(0, 4, { title: 'Data Generator' });
+  //menu.item(0, 5, { title: 'Delete History' });
   return menu;
 }
 
 //handles the inputs for the menu
 function handleMenu(menu, e){
   //myLogger.debug('handle the menu');
-  if (e.itemIndex === 0) {
+  if (e.itemIndex == 1) {
     draw.graph(votes,1,24);
-  } else if (e.itemIndex == 1) {
-     draw.graph(votes,7,7);
   } else if (e.itemIndex == 2) {
+     draw.graph(votes,7,7);
+  } else if (e.itemIndex == 3) {
      draw.graph(votes,30,30);
-  } else if (e.itemIndex == 4) {
+  } else if (e.itemIndex == 5) {
     votes.length = 0;
     localStorage.setItem("moodapp", JSON.stringify(votes));
     main.body(mainContent());
     buildMenu(menu);
-  } else if (e.itemIndex == 3) {
+  } else if (e.itemIndex == 4) {
     functions.dataGenerator(votes);
+    //functions.controlledGenerator(votes);
     main.body(mainContent());
     buildMenu(menu);
+  } else if (e.itemIndex === 0) {
+     draw.graph(votes,0,24);
   }
 }
 
