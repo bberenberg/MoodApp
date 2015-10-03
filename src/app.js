@@ -110,8 +110,8 @@ function buildMenu(menu){
   menu.item(0, 1, { title: 'Yesterday (' + functions.sumScore(votes, functions.timeHop(1), start)[0] + ')' });
   menu.item(0, 2, { title: '7 day score (' + functions.sumScore(votes, functions.timeHop(7), start)[0] + ')' });
   menu.item(0, 3, { title: '30 day score (' + functions.sumScore(votes, functions.timeHop(30), start)[0] + ')' });
-  //menu.item(0, 4, { title: 'Data Generator' });
-  //menu.item(0, 5, { title: 'Delete History' });
+  menu.item(0, 4, { title: 'Data Generator' });
+  menu.item(0, 5, { title: 'Delete History' });
   return menu;
 }
 

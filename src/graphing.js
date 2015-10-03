@@ -79,7 +79,7 @@ draw.graph = function (votes,intervals,segments){
       graph.add(column);
   });
   
-  var midnight = functions.startOfDay();
+  var midnight = functions.timeHop(1);
   var dateRange;
   if (intervals == 1 || intervals === 0){
     dateRange = firstInterval.getMonth() + '/' + firstInterval.getDate();
