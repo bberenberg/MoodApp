@@ -25,13 +25,13 @@ functions.startOfDay = function(){
 
 
 //finds the sum score
-functions.sumScore = function(votes,pastDate){
+functions.sumScore = function(votes,pastDate, endDate){
  // myLogger.debug('summing the votes');
   var sum = 0;
   var counter = 0;
   if (votes && votes.length){
     for (var i=0; i <votes.length; i++){
-      if (votes[i][0].getTime() > pastDate.getTime()){
+      if (votes[i][0].getTime() > pastDate.getTime() && votes[i][0].getTime() < endDate){
         sum = sum + votes[i][1];
         counter = counter + 1;
       }
@@ -143,10 +143,8 @@ functions.launch = function(){
       console.log('Woke up to ' + e.id + '! data: ' + JSON.stringify(e.data));
     } else {
       console.log('Regular launch not by a wakeup event.');
-      if (!timer){
-        // FIX THIS SHIT IT IS BROKEN
-        timer = functions.timer();
-      }
+      functions.timer();
+      functions.defaultSettings();
       //var myLogger = functions.Logger();
       //myLogger.level = 'debug';
       //myLogger.debug('test logging output');
@@ -205,3 +203,26 @@ functions.controlledGenerator = function(votes){
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
+functions.defaultSettings = function(){
+  if(!Settings.option('reminderInterval')){
+    Settings.option('reminderInterval', 0);
+  }
+  if(!Settings.option('light')){
+    Settings.option('light',true);
+  }
+  if(!Settings.option('vibration')){
+    Settings.option('vibration', true);
+  }
+  if(!Settings.option('location')){
+    Settings.option('location', true);
+  }
+  if(!Settings.option('reminderIntervalUnit')){
+    Settings.option('reminderIntervalUnit',1);
+  }
+  if(!Settings.option('reminderMode')){
+    Settings.option('reminderMode','noReminders');
+  }
+  var options = Settings.option();
+  console.log(JSON.stringify(options));
+};
