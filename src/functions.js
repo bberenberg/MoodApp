@@ -4,6 +4,9 @@ var Settings = require('settings');
 var Vibe = require('ui/vibe');
 var Light = require('ui/light');
 var Wakeup = require('wakeup');
+var timer;
+
+
 
 //gives us a date object N number of days in the past
 functions.timeHop = function(days) {
@@ -22,13 +25,13 @@ functions.startOfDay = function(){
 
 
 //finds the sum score
-functions.sumScore = function(votes,pastDate){
+functions.sumScore = function(votes,pastDate, endDate){
  // myLogger.debug('summing the votes');
   var sum = 0;
   var counter = 0;
   if (votes && votes.length){
     for (var i=0; i <votes.length; i++){
-      if (votes[i][0].getTime() > pastDate.getTime()){
+      if (votes[i][0].getTime() >= pastDate.getTime() && votes[i][0].getTime() < endDate){
         sum = sum + votes[i][1];
         counter = counter + 1;
       }
@@ -74,12 +77,9 @@ functions.settings = function(){
   Settings.config(
     { url: 'http://tin.cr/moodapp/config/index.html' },
     function(e) {
+      var votes = functions.readLocalStorage();
       console.log('opening configurable');
-      Settings.option('reminderInterval', '0');
-      Settings.option('reminderIntervalUnit', '0');
-      Settings.option('vibration', true);
-      Settings.option('light', true);
-      Settings.option('reminderMode', '1');
+      //Settings.option('accountToken', String(Pebble.getAccountToken()));
     },
     function(e) {
       console.log('closed configurable');
@@ -99,9 +99,21 @@ functions.alert = function(){
   //myLogger.debug('triggering alert');
   if (settings.light){
     Light.trigger();
+    console.log('alert light');
   }
-  if (settings.vibrate){
+  if (settings.vibration){
     Vibe.vibrate('short');
+    console.log('alert vibe');
+  }
+  if (settings.reminderMode == "randomReminders"){
+    clearInterval(timer);
+    var temp = getRandomInt(20,120)*60000;
+    var now = Date.now();
+    console.log('now ' + now);
+    console.log('interval ' + temp);
+    console.log('expected ' + now + temp);
+    timer = setInterval(functions.alert, temp);
+    return timer;
   }
 };
 
@@ -131,31 +143,40 @@ functions.launch = function(){
       console.log('Woke up to ' + e.id + '! data: ' + JSON.stringify(e.data));
     } else {
       console.log('Regular launch not by a wakeup event.');
-      if (!timer){
-        // FIX THIS SHIT IT IS BROKEN
-        timer = functions.timer();
-      }
-      var myLogger = functions.Logger();
-      myLogger.level = 'debug';
-      myLogger.debug('test logging output');
+      functions.timer();
+      functions.defaultSettings();
+      //var myLogger = functions.Logger();
+      //myLogger.level = 'debug';
+      //myLogger.debug('test logging output');
     }
   });
 };
 
-functions.timer = function(timer){
+functions.timer = function(){
   //myLogger.debug('entered timer function');
   if (timer){
     clearInterval(timer);
     console.log('cleared timer');
   }
   var settings = Settings.option();
-  if (settings.reminderMode != "noReminders"){
+  if (settings.reminderMode == "timeReminders"){
     timer = setInterval(functions.alert, settings.reminderInterval*60000*settings.reminderIntervalUnit);
-    console.log('started new timer');
     return timer;
   }
+  else if (settings.reminderMode == "randomReminders"){
+    var temp = getRandomInt(20,120)*60000;
+    var now = Date.now();
+    console.log('now ' + now);
+    console.log('interval ' + temp);
+    console.log('expected ' + now + temp);
+    timer = setInterval(functions.alert, temp);
+    return timer;
+  }
+  else{
+    clearInterval(timer);
+    console.log('cleared timer');
+  }
 };
-
 
 functions.dataGenerator = function(votes){
   //myLogger.debug('data generator');
@@ -166,15 +187,52 @@ functions.dataGenerator = function(votes){
       var direction = Math.random() < 0.5 ? 1 : -1;
       votes.push([d,direction]);
   }
+  var d = functions.timeHop(1);
+  votes.push([d,-1]);
   localStorage.setItem("moodapp", JSON.stringify(votes));
 };
 
 functions.controlledGenerator = function(votes){
   votes.length = 0;
-  for (var i = 0; i < 30; i++){
-      var d = functions.timeHop(i);
+  for (var i = 0; i < 48; i++){
+      var hour = (Math.floor(Math.random() * 23));
+      var now = new Date();
+      var d = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        hour, 0, 0 
+      );
       var direction = Math.random() < 0.5 ? 1 : -1;
       votes.push([d,direction]);
+    console.log(d + ' ' + direction);
   }
   localStorage.setItem("moodapp", JSON.stringify(votes));
+};
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+functions.defaultSettings = function(){
+  if(!Settings.option('reminderInterval')){
+    Settings.option('reminderInterval', 0);
+  }
+  if(!Settings.option('light')){
+    Settings.option('light',true);
+  }
+  if(!Settings.option('vibration')){
+    Settings.option('vibration', true);
+  }
+  if(!Settings.option('location')){
+    Settings.option('location', true);
+  }
+  if(!Settings.option('reminderIntervalUnit')){
+    Settings.option('reminderIntervalUnit',1);
+  }
+  if(!Settings.option('reminderMode')){
+    Settings.option('reminderMode','noReminders');
+  }
+  var options = Settings.option();
+  console.log(JSON.stringify(options));
 };

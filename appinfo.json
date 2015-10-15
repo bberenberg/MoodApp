@@ -1,9 +1,9 @@
 {
     "appKeys": {},
     "capabilities": [
-        ""
+        "configurable"
     ],
-    "companyName": "bberenberg@gmail.com",
+    "companyName": "tin.cr",
     "longName": "MoodApp",
     "projectType": "pebblejs",
     "resources": {
@@ -29,9 +29,24 @@
                 "type": "font"
             },
             {
+                "file": "images/arrowd.png",
+                "name": "IMAGES_ARROWD_PNG",
+                "type": "png"
+            },
+            {
                 "file": "images/mood28.png",
                 "menuIcon": true,
                 "name": "IMAGES_MOOD28_PNG",
+                "type": "png"
+            },
+            {
+                "file": "images/minusd.png",
+                "name": "IMAGES_MINUSD_PNG",
+                "type": "png"
+            },
+            {
+                "file": "images/plusd.png",
+                "name": "IMAGES_PLUSD_PNG",
                 "type": "png"
             }
         ]
@@ -40,7 +55,7 @@
     "shortName": "MoodApp",
     "uuid": "1b6ffe3c-4e75-417f-8d61-15a9bc473408",
     "versionCode": 1,
-    "versionLabel": "1.0",
+    "versionLabel": "2.1",
     "watchapp": {
         "hiddenApp": false,
         "watchface": false
