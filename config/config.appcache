@@ -1,8 +1,6 @@
 CACHE MANIFEST
-js/slate.js
 js/slate.min.js
 fonts/pfdindisplaypro-regular.woff
 fonts/ptsans-regular.woff
 css/moodapp.css
-css/slate.css
 css/slate.min.css
