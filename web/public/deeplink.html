@@ -1,0 +1,18 @@
+<html>
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+  <script src="deeplink.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    deeplink.setup({
+        iOS: {
+            storeUrl: "pebble://appstore/55b65b171ad0f4bb56000061",
+        },
+        android: {
+            storeUrl: "pebble://appstore/55b65b171ad0f4bb56000061",
+        }
+    });
+
+    window.onload = function() {
+        deeplink.open("pebble://appstore/55b65b171ad0f4bb56000061");
+    }
+  </script>
+<html>
