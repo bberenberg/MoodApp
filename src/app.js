@@ -12,6 +12,9 @@ var draw = require('graphing');
 var functions = require('functions');
 var Settings = require('settings');
 
+require('firebase230'); 
+Firebase.INTERNAL.forceWebSockets(); 
+
 var midnightTimer;
 functions.launch();
 functions.settings();
@@ -81,11 +84,10 @@ function vote(direction){
     } else{
       votes.push([d,direction]);
     }
-    console.log(JSON.stringify(votes));
     localStorage.setItem("moodapp", JSON.stringify(votes));
     main.body(mainContent());
-    midnightReset();
-    console.log(JSON.stringify(votes));
+    setTimeout(midnightReset(),0);
+    setTimeout(firebaseSync(),0);
   });
 }
 
@@ -170,4 +172,29 @@ function midnightReset() {
   );
   var msTillMidnight = night.getTime() - now.getTime();
   midnightTimer = setTimeout(function(){ main.body(mainContent());}, msTillMidnight);
+}
+
+function firebaseSync(){
+  var ref = new Firebase("https://moodapp.firebaseio.com");  
+  ref.authWithPassword({
+    email    : "test@example.com",
+    password : "test"
+  }, function(error, authData) {
+    if (error) {
+      console.log("Login Failed!", error);
+    } else {
+      var usersRef = ref.child("users");
+      var scores = {};
+      scores = {scores: votes};
+      var userRef = usersRef.child(authData.uid);
+      userRef.once("value", function(data) {
+        if (data.val()){
+          userRef.update(scores);
+        }
+        else {
+          userRef.set(scores);
+        }
+      });
+    }
+  });
 }

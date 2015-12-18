@@ -11,17 +11,17 @@
             {
                 "file": "images/menu_icon.png",
                 "name": "IMAGE_MENU_ICON",
-                "type": "png"
+                "type": "bitmap"
             },
             {
                 "file": "images/logo_splash.png",
                 "name": "IMAGE_LOGO_SPLASH",
-                "type": "png"
+                "type": "bitmap"
             },
             {
                 "file": "images/tile_splash.png",
                 "name": "IMAGE_TILE_SPLASH",
-                "type": "png"
+                "type": "bitmap"
             },
             {
                 "file": "fonts/UbuntuMono-Regular.ttf",
@@ -29,30 +29,34 @@
                 "type": "font"
             },
             {
-                "file": "images/arrowd.png",
-                "name": "IMAGES_ARROWD_PNG",
-                "type": "png"
-            },
-            {
                 "file": "images/mood28.png",
                 "menuIcon": true,
                 "name": "IMAGES_MOOD28_PNG",
-                "type": "png"
+                "type": "bitmap"
+            },
+            {
+                "file": "images/arrowd.png",
+                "name": "IMAGES_ARROWD_PNG",
+                "type": "bitmap"
             },
             {
                 "file": "images/minusd.png",
                 "name": "IMAGES_MINUSD_PNG",
-                "type": "png"
+                "type": "bitmap"
             },
             {
                 "file": "images/plusd.png",
                 "name": "IMAGES_PLUSD_PNG",
-                "type": "png"
+                "type": "bitmap"
             }
         ]
     },
     "sdkVersion": "3",
     "shortName": "MoodApp",
+    "targetPlatforms": [
+        "aplite",
+        "basalt"
+    ],
     "uuid": "1b6ffe3c-4e75-417f-8d61-15a9bc473408",
     "versionCode": 1,
     "versionLabel": "2.1",
