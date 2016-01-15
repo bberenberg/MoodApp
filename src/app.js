@@ -86,8 +86,8 @@ function vote(direction){
     }
     localStorage.setItem("moodapp", JSON.stringify(votes));
     main.body(mainContent());
-    setTimeout(midnightReset(),0);
-    setTimeout(firebaseSync(),0);
+    setTimeout(midnightReset,0);
+    setTimeout(firebasePush,0);
   });
 }
 
@@ -132,8 +132,9 @@ function handleMenu(menu, e){
     main.body(mainContent());
     buildMenu(menu);
   } else if (e.itemIndex == 4) {
-    functions.dataGenerator(votes);
+    //functions.dataGenerator(votes);
     //functions.controlledGenerator(votes);
+    firebasePull();
     main.body(mainContent());
     buildMenu(menu);
   } else if (e.itemIndex === 0) {
@@ -148,7 +149,6 @@ function getCurrentLocation(callback){
     timeout: 10000
   };
   function locationSuccess(pos) {
-    console.log('lat= ' + pos.coords.latitude + ' lon= ' + pos.coords.longitude);
     callback(null, {lat: pos.coords.latitude, lon: pos.coords.longitude});
   }
   function locationError(err) {
@@ -171,10 +171,11 @@ function midnightReset() {
     0, 0, 0 
   );
   var msTillMidnight = night.getTime() - now.getTime();
-  midnightTimer = setTimeout(function(){ main.body(mainContent());}, msTillMidnight);
+  console.log(msTillMidnight);
+  midnightTimer = setTimeout(function(){main.body(mainContent());}, msTillMidnight);
 }
 
-function firebaseSync(){
+function firebasePush(){
   var ref = new Firebase("https://moodapp.firebaseio.com");  
   ref.authWithPassword({
     email    : "test@example.com",
@@ -186,6 +187,7 @@ function firebaseSync(){
       var usersRef = ref.child("users");
       var scores = {};
       scores = {scores: votes};
+      console.log('1');
       var userRef = usersRef.child(authData.uid);
       userRef.once("value", function(data) {
         if (data.val()){
@@ -193,6 +195,28 @@ function firebaseSync(){
         }
         else {
           userRef.set(scores);
+        }
+      });
+    }
+  });
+}
+
+function firebasePull(){
+  var ref = new Firebase("https://moodapp.firebaseio.com");  
+  ref.authWithPassword({
+    email    : "test@example.com",
+    password : "test"
+  }, function(error, authData) {
+    if (error) {
+      console.log("Login Failed!", error);
+    } else {
+      var usersRef = ref.child("users");
+      var userRef = usersRef.child(authData.uid);
+      userRef.on("value", function(snapshot, prevChildKey){
+        votes = snapshot.val().scores;
+        for (var i=0; i <votes.length; i++){
+          votes[i][0] = new Date(votes[i][0]);  
+          //THIS IS WHERE WE FIX IT
         }
       });
     }

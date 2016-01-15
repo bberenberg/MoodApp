@@ -31,6 +31,7 @@ functions.sumScore = function(votes,pastDate, endDate){
   var counter = 0;
   if (votes && votes.length){
     for (var i=0; i <votes.length; i++){
+      console.log(votes[i][0]);
       if (votes[i][0].getTime() >= pastDate.getTime() && votes[i][0].getTime() < endDate){
         sum = sum + votes[i][1];
         counter = counter + 1;
